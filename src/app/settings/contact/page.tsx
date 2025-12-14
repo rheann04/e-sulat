@@ -1,9 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function ContactPage() {
   const router = useRouter();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 relative overflow-hidden">
@@ -26,19 +28,19 @@ export default function ContactPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-800">Contact Support</h1>
+        <h1 className="text-xl font-bold text-gray-800">{t('contact.title')}</h1>
       </header>
 
       {/* Main Content */}
       <main className="relative z-10 p-4">
         <div className="bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-white/30">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Get in Touch</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('contact.getInTouch')}</h2>
           
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Email Support</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('contact.emailSupport')}</h3>
               <p className="text-gray-600 mb-2">
-                For technical issues or general inquiries:
+                {t('contact.emailSupportDesc')}
               </p>
               <a 
                 href="mailto:support@esulat.app" 
@@ -49,27 +51,23 @@ export default function ContactPage() {
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Response Time</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('contact.responseTime')}</h3>
               <p className="text-gray-600">
-                We typically respond to support requests within 24-48 hours during business days.
+                {t('contact.responseTimeDesc')}
               </p>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">What to Include</h3>
-              <p className="text-gray-600">
-                When contacting support, please include:<br/>
-                • Description of the issue<br/>
-                • Steps to reproduce the problem<br/>
-                • Your device and browser information<br/>
-                • Screenshots if applicable
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('contact.whatToInclude')}</h3>
+              <p className="text-gray-600 whitespace-pre-line">
+                {t('contact.whatToIncludeDesc')}
               </p>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Feedback</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('contact.feedback')}</h3>
               <p className="text-gray-600">
-                We love hearing from our users! Send us your suggestions and feedback to help improve E-Sulat.
+                {t('contact.feedbackDesc')}
               </p>
             </div>
           </div>

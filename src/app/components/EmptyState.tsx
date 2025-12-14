@@ -28,13 +28,13 @@ export default function EmptyState({
           )}
         </div>
       </div>
-      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6 drop-shadow-lg tracking-wide">{title}</h2>
-      <p className="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 lg:mb-10 max-w-sm sm:max-w-md lg:max-w-lg leading-relaxed drop-shadow-md font-medium px-4">
+      <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6 drop-shadow-lg tracking-tight">{title}</h2>
+      <p className="font-body text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 lg:mb-10 max-w-sm sm:max-w-md lg:max-w-lg leading-relaxed drop-shadow-md font-medium px-4">
         {description}
       </p>
       <button
         onClick={onAction}
-        className="bg-gradient-sunset hover:shadow-glow-strong text-white font-bold touch-target py-3 sm:py-4 lg:py-5 px-6 sm:px-8 lg:px-10 rounded-xl sm:rounded-2xl transition-all duration-300 text-sm sm:text-base lg:text-lg hover-lift shadow-glass-medium border border-white/20 group"
+        className="font-body bg-gradient-sunset hover:shadow-glow-strong text-white font-bold touch-target py-3 sm:py-4 lg:py-5 px-6 sm:px-8 lg:px-10 rounded-xl sm:rounded-2xl transition-all duration-300 text-sm sm:text-base lg:text-lg hover-lift shadow-glass-medium border border-white/20 group"
       >
         <div className="flex items-center gap-2 sm:gap-3">
           <span>{actionLabel}</span>

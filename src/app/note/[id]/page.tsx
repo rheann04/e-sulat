@@ -24,6 +24,12 @@ const themes = [
   { name: 'Light Pink', color: '#fdf2f8' },
   { name: 'Light Yellow', color: '#fffbeb' },
   { name: 'Light Purple', color: '#f3e8ff' },
+  { name: 'Light Orange', color: '#fff7ed' },
+  { name: 'Light Cyan', color: '#ecfeff' },
+  { name: 'Light Gray', color: '#f9fafb' },
+  { name: 'Warm White', color: '#fefce8' },
+  { name: 'Cool Gray', color: '#f8fafc' },
+  { name: 'Mint', color: '#f0fdfa' },
 ];
 
 const fonts = [
@@ -80,7 +86,16 @@ export default function NotePage() {
     if (note) {
       const updatedNote = { ...note, theme };
       setNote(updatedNote);
-      await saveNote();
+      
+      // Save immediately with the new theme
+      const allNotes = await StorageHelpers.getNotes();
+      const updatedNotes = allNotes.map((n: Note) => 
+        n.id === noteId 
+          ? { ...n, title, content, theme, font: note.font, photos }
+          : n
+      );
+      
+      await StorageHelpers.setNotes(updatedNotes);
     }
     setShowThemeModal(false);
   };
@@ -89,7 +104,16 @@ export default function NotePage() {
     if (note) {
       const updatedNote = { ...note, font };
       setNote(updatedNote);
-      await saveNote();
+      
+      // Save immediately with the new font
+      const allNotes = await StorageHelpers.getNotes();
+      const updatedNotes = allNotes.map((n: Note) => 
+        n.id === noteId 
+          ? { ...n, title, content, theme: note.theme, font, photos }
+          : n
+      );
+      
+      await StorageHelpers.setNotes(updatedNotes);
     }
     setShowFontModal(false);
   };
@@ -125,11 +149,7 @@ export default function NotePage() {
     setSelectedPhotoIndex(null);
   };
 
-  const insertPhotoIntoContent = (photoIndex: number) => {
-    const photoPlaceholder = `[Photo ${photoIndex + 1}]`;
-    setContent(prev => prev + '\n' + photoPlaceholder + '\n');
-    setShowImageModal(false);
-  };
+
 
   if (!note) {
     return (
@@ -178,13 +198,16 @@ export default function NotePage() {
         }}
       >
         <div className="w-full h-full min-h-[400px] space-y-4">
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Start writing your note... You can add photos below and reference them in your text using [Photo 1], [Photo 2], etc."
-            className="w-full h-full min-h-[300px] bg-transparent border-none outline-none resize-none text-gray-800"
-            style={{ fontFamily: currentFont.family }}
-          />
+          {/* Content Editor */}
+          <div className="relative">
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Start writing your note..."
+              className="w-full h-full min-h-[300px] bg-transparent border-none outline-none resize-none text-gray-800 relative z-10"
+              style={{ fontFamily: currentFont.family }}
+            />
+          </div>
           
           {/* Photo Gallery */}
           {photos.length > 0 && (
@@ -204,12 +227,6 @@ export default function NotePage() {
                       className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs hover:bg-red-600"
                     >
                       ×
-                    </button>
-                    <button
-                      onClick={() => insertPhotoIntoContent(index)}
-                      className="absolute bottom-2 right-2 px-2 py-1 bg-blue-500 text-white rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-600"
-                    >
-                      Insert
                     </button>
                   </div>
                 ))}
@@ -270,7 +287,7 @@ export default function NotePage() {
             <p className="text-white/80 text-sm">Select a background color for your note</p>
           </div>
           
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-3 gap-3 mb-6 max-h-80 overflow-y-auto">
             {themes.map((theme) => {
               const isSelected = currentTheme.color === theme.color;
               return (
@@ -407,6 +424,9 @@ export default function NotePage() {
                       >
                         ×
                       </button>
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                        Photo {index + 1}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -440,12 +460,6 @@ export default function NotePage() {
                 Delete Photo
               </button>
               <button
-                onClick={() => insertPhotoIntoContent(selectedPhotoIndex)}
-                className="flex-1 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-              >
-                Insert Reference
-              </button>
-              <button
                 onClick={() => setSelectedPhotoIndex(null)}
                 className="flex-1 py-2 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
               >
@@ -455,6 +469,8 @@ export default function NotePage() {
           </div>
         </Modal>
       )}
+
+
     </div>
   );
 }

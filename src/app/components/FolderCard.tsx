@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Folder {
   id: string;
@@ -19,6 +20,7 @@ export default function FolderCard({ folder, onClick, onEdit, onDelete }: Folder
   const [showContextMenu, setShowContextMenu] = useState(false);
   const longPressTimer = useRef<number | null>(null);
   const [isLongPressing, setIsLongPressing] = useState(false);
+  const { t } = useLanguage();
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsLongPressing(false);
@@ -110,11 +112,11 @@ export default function FolderCard({ folder, onClick, onEdit, onDelete }: Folder
             <span className="text-lg sm:text-xl lg:text-2xl">📁</span>
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-lg sm:text-xl text-white truncate group-hover:text-white/90 transition-colors drop-shadow-md">
+            <h3 className="font-heading font-bold text-lg sm:text-xl text-white truncate group-hover:text-white/90 transition-colors drop-shadow-md">
               {folder.name}
             </h3>
-            <p className="text-xs sm:text-sm text-white/70 mt-1 sm:mt-2 font-medium">
-              Created {new Date(folder.createdAt).toLocaleDateString('en-US', {
+            <p className="font-caption text-xs sm:text-sm text-white/70 mt-1 sm:mt-2 font-medium">
+              {t('main.created')} {new Date(folder.createdAt).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year: 'numeric'
@@ -135,8 +137,8 @@ export default function FolderCard({ folder, onClick, onEdit, onDelete }: Folder
           <div className="glass-strong rounded-xl sm:rounded-2xl p-4 sm:p-6 m-4 max-w-xs sm:max-w-sm w-full shadow-glass-strong border border-white/30 backdrop-blur-xl animate-slide-up">
             <div className="text-center mb-4 sm:mb-6">
               <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">📁</div>
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2 truncate">{folder.name}</h3>
-              <p className="text-white/70 text-xs sm:text-sm">Choose an action</p>
+              <h3 className="font-heading text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2 truncate">{folder.name}</h3>
+              <p className="font-body text-white/70 text-xs sm:text-sm">{t('common.chooseAction')}</p>
             </div>
             
             <div className="space-y-2 sm:space-y-3">
@@ -147,7 +149,7 @@ export default function FolderCard({ folder, onClick, onEdit, onDelete }: Folder
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                <span className="font-medium text-sm sm:text-base">Edit</span>
+                <span className="font-body font-medium text-sm sm:text-base">{t('common.edit')}</span>
               </button>
               
               <button
@@ -157,7 +159,7 @@ export default function FolderCard({ folder, onClick, onEdit, onDelete }: Folder
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-                <span className="font-medium text-sm sm:text-base">Delete</span>
+                <span className="font-body font-medium text-sm sm:text-base">{t('common.delete')}</span>
               </button>
               
               <button
@@ -167,7 +169,7 @@ export default function FolderCard({ folder, onClick, onEdit, onDelete }: Folder
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                <span className="font-medium text-sm sm:text-base">Cancel</span>
+                <span className="font-body font-medium text-sm sm:text-base">{t('main.cancel')}</span>
               </button>
             </div>
           </div>

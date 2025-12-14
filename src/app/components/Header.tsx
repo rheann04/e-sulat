@@ -21,10 +21,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-accent opacity-20 animate-pulse"></div>
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-wide drop-shadow-lg truncate">
+          <h1 className="font-heading text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight drop-shadow-lg truncate">
             E-SULAT
           </h1>
-          <p className="text-white/70 text-xs sm:text-sm font-medium hidden sm:block">Digital Notebook</p>
+          <p className="font-accent text-white/70 text-xs sm:text-sm font-medium hidden sm:block italic">Digital Notebook</p>
         </div>
       </div>
       <button

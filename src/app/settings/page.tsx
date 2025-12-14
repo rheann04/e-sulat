@@ -3,22 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '../components/Sidebar';
+import { useLanguage, Language } from '../contexts/LanguageContext';
 
 export default function SettingsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('ENGLISH');
   const router = useRouter();
+  const { language, setLanguage, t } = useLanguage();
 
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage) {
-      setSelectedLanguage(savedLanguage);
-    }
-  }, []);
-
-  const handleLanguageChange = (language: string) => {
-    setSelectedLanguage(language);
-    localStorage.setItem('language', language);
+  const handleLanguageChange = (newLanguage: Language) => {
+    setLanguage(newLanguage);
   };
 
   const handleNavigation = (path: string) => {
@@ -38,7 +31,7 @@ export default function SettingsPage() {
       {/* Header */}
       <header className="bg-white/20 backdrop-blur-sm shadow-lg p-4 flex justify-between items-center relative z-10">
         <div className="w-10"></div>
-        <h1 className="text-xl font-bold text-gray-800 text-center">Settings</h1>
+        <h1 className="text-xl font-bold text-gray-800 text-center">{t('settings.title')}</h1>
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 hover:bg-gray-100 rounded-lg"
@@ -56,19 +49,19 @@ export default function SettingsPage() {
         <div className="space-y-4">
           {/* Language Section */}
           <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/30 shadow-lg">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Language</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">{t('settings.language')}</h2>
             <div className="space-y-2">
-              {['ENGLISH', 'TAGALOG', 'BISAYA'].map((language) => (
-                <label key={language} className="flex items-center gap-3 p-2 hover:bg-white/20 rounded-lg cursor-pointer transition-all">
+              {(['ENGLISH', 'TAGALOG', 'BISAYA'] as Language[]).map((lang) => (
+                <label key={lang} className="flex items-center gap-3 p-2 hover:bg-white/20 rounded-lg cursor-pointer transition-all">
                   <input
                     type="radio"
                     name="language"
-                    value={language}
-                    checked={selectedLanguage === language}
-                    onChange={() => handleLanguageChange(language)}
+                    value={lang}
+                    checked={language === lang}
+                    onChange={() => handleLanguageChange(lang)}
                     className="w-4 h-4 text-blue-500 focus:ring-blue-500 focus:ring-2"
                   />
-                  <span className="font-medium text-gray-800">{language}</span>
+                  <span className="font-medium text-gray-800">{lang}</span>
                 </label>
               ))}
             </div>
@@ -86,7 +79,7 @@ export default function SettingsPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <span className="font-medium text-gray-800">Help Center</span>
+                <span className="font-medium text-gray-800">{t('settings.helpCenter')}</span>
               </div>
               <svg className="w-5 h-5 text-gray-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -103,7 +96,7 @@ export default function SettingsPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <span className="font-medium text-gray-800">Contact Support</span>
+                <span className="font-medium text-gray-800">{t('settings.contactSupport')}</span>
               </div>
               <svg className="w-5 h-5 text-gray-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -120,7 +113,7 @@ export default function SettingsPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <span className="font-medium text-gray-800">Version</span>
+                <span className="font-medium text-gray-800">{t('settings.version')}</span>
               </div>
               <svg className="w-5 h-5 text-gray-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -137,7 +130,7 @@ export default function SettingsPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <span className="font-medium text-gray-800">Terms of Service</span>
+                <span className="font-medium text-gray-800">{t('settings.termsOfService')}</span>
               </div>
               <svg className="w-5 h-5 text-gray-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

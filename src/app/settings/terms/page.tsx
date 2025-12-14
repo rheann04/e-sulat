@@ -1,9 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function TermsPage() {
   const router = useRouter();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 relative overflow-hidden">
@@ -26,74 +28,67 @@ export default function TermsPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-800">Terms of Service</h1>
+        <h1 className="text-xl font-bold text-gray-800">{t('terms.title')}</h1>
       </header>
 
       {/* Main Content */}
       <main className="relative z-10 p-4">
         <div className="bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-white/30">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Terms of Service</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('terms.title')}</h2>
           
           <div className="space-y-6 text-gray-700">
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">1. Acceptance of Terms</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('terms.acceptance')}</h3>
               <p>
-                By using E-Sulat, you agree to be bound by these Terms of Service. 
-                If you do not agree to these terms, please do not use our application.
+                {t('terms.acceptanceDesc')}
               </p>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">2. Description of Service</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('terms.description')}</h3>
               <p>
-                E-Sulat is a personal note-taking and reminder application that allows users to 
-                create, organize, and manage their notes and reminders.
+                {t('terms.descriptionDesc')}
               </p>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">3. User Data</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('terms.userData')}</h3>
               <p>
-                Your notes and data are stored locally on your device. We do not collect, 
-                store, or transmit your personal notes or content to external servers.
+                {t('terms.userDataDesc')}
               </p>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">4. Privacy</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('terms.privacy')}</h3>
               <p>
-                We respect your privacy. All your notes and personal information remain 
-                on your device and are not shared with third parties.
+                {t('terms.privacyDesc')}
               </p>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">5. Acceptable Use</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('terms.acceptableUse')}</h3>
               <p>
-                You agree to use E-Sulat only for lawful purposes and in accordance with 
-                these Terms of Service. You are responsible for all content you create.
+                {t('terms.acceptableUseDesc')}
               </p>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">6. Limitation of Liability</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('terms.limitation')}</h3>
               <p>
-                E-Sulat is provided "as is" without warranties of any kind. We are not 
-                liable for any loss of data or damages arising from the use of this application.
+                {t('terms.limitationDesc')}
               </p>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">7. Changes to Terms</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('terms.changes')}</h3>
               <p>
-                We reserve the right to modify these terms at any time. Continued use of 
-                the application constitutes acceptance of any changes.
+                {t('terms.changesDesc')}
               </p>
             </div>
             
             <div className="pt-4 border-t border-gray-200">
               <p className="text-sm text-gray-500">
-                Last updated: December 14, 2024
+                {t('terms.lastUpdated')}
               </p>
             </div>
           </div>

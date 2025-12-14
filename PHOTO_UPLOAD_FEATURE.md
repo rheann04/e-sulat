@@ -17,10 +17,12 @@ The photo upload feature allows users to attach images to their notes, making th
 - **Delete photos**: Remove unwanted photos with a single click
 - **Photo counter**: Visual indicator showing number of photos in a note
 
-### 📝 Photo References
-- **Insert references**: Add photo references like `[Photo 1]` into note content
+### 📝 Photo References & Text Wrapping
+- **Insert references**: Add photo references with wrapping options into note content
+- **Text wrapping**: Choose how text flows around photos (left, right, center, or block)
+- **Live preview**: See how photos will appear with text in the preview section
 - **Visual indicators**: Notes with photos show a photo icon and count in the folder view
-- **Easy insertion**: Click "Insert" button on any photo to add a reference
+- **Easy insertion**: Click any photo to choose wrapping style and insert
 
 ## How to Use
 
@@ -33,7 +35,11 @@ The photo upload feature allows users to attach images to their notes, making th
 ### Managing Photos
 - **View**: Click on any photo thumbnail to view it full size
 - **Delete**: Hover over a photo and click the "×" button
-- **Reference**: Click "Insert" to add a text reference to your note
+- **Insert with wrapping**: Click any photo to choose how text wraps around it:
+  - **Block**: Full width photo (default)
+  - **Center**: Centered photo with text above and below
+  - **Wrap Left**: Photo on left, text flows around the right
+  - **Wrap Right**: Photo on right, text flows around the left
 
 ### Visual Indicators
 - Notes with photos show a blue photo icon with count in the folder view
@@ -80,9 +86,17 @@ interface Note {
 - Consider image compression for production use
 - localStorage has size limits (typically 5-10MB per domain)
 
+### Text Wrapping Syntax
+- `[Photo 1]` - Block photo (full width)
+- `[Photo 1 center]` - Centered photo
+- `[Photo 1 wrap-left]` - Photo floated left, text wraps right
+- `[Photo 1 wrap-right]` - Photo floated right, text wraps left
+
 ## Future Enhancements
 - Image compression before storage
 - Cloud storage integration
 - Image editing capabilities
 - Drag & drop reordering
 - Photo captions and metadata
+- Advanced text wrapping controls
+- Photo resizing options

@@ -11,6 +11,7 @@ import FloatingActionButtons from '../components/FloatingActionButtons';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { StorageHelpers } from '../utils/storage';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Folder {
   id: string;
@@ -44,6 +45,7 @@ export default function MainPage() {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
   const router = useRouter();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const loadFolders = async () => {
@@ -172,9 +174,9 @@ export default function MainPage() {
         {folders.length === 0 ? (
           <EmptyState
             icon=""
-            title="No folders yet"
-            description="Create your first folder to start organizing your notes and ideas."
-            actionLabel="Create First Folder"
+            title={t('main.noFolders')}
+            description={t('main.noFoldersDesc')}
+            actionLabel={t('main.createFirstFolder')}
             onAction={() => setShowNewFolderModal(true)}
           />
         ) : (
@@ -211,14 +213,14 @@ export default function MainPage() {
         <Modal onClose={() => setShowNewFolderModal(false)}>
           <div className="text-center mb-6">
             <div className="text-6xl mb-4">📁</div>
-            <h2 className="text-xl font-semibold text-white mb-2">New Folder</h2>
-            <p className="text-white/70 text-sm">Enter a name for your folder</p>
+            <h2 className="font-heading text-xl font-semibold text-white mb-2">{t('main.newFolder')}</h2>
+            <p className="font-body text-white/70 text-sm">{t('main.folderName')}</p>
           </div>
           <div className="mb-6">
             <Input
               value={folderName}
               onChange={(e) => setFolderName(e.target.value)}
-              placeholder="Folder name"
+              placeholder={t('main.folderName')}
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
               className="text-base p-3"
@@ -231,7 +233,7 @@ export default function MainPage() {
               fullWidth
               onClick={() => setShowNewFolderModal(false)}
             >
-              Cancel
+              {t('main.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -240,7 +242,7 @@ export default function MainPage() {
               onClick={handleCreateFolder}
               disabled={!folderName.trim()}
             >
-              Create
+              {t('main.create')}
             </Button>
           </div>
         </Modal>
@@ -255,14 +257,14 @@ export default function MainPage() {
         }}>
           <div className="text-center mb-6">
             <div className="text-6xl mb-4">✏️</div>
-            <h2 className="text-xl font-semibold text-white mb-2">Edit Folder</h2>
-            <p className="text-white/70 text-sm">Update the folder name</p>
+            <h2 className="font-heading text-xl font-semibold text-white mb-2">{t('common.edit')} {t('main.folders')}</h2>
+            <p className="font-body text-white/70 text-sm">{t('main.folderName')}</p>
           </div>
           <div className="mb-6">
             <Input
               value={folderName}
               onChange={(e) => setFolderName(e.target.value)}
-              placeholder="Folder name"
+              placeholder={t('main.folderName')}
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleUpdateFolder()}
               className="text-base p-3"
@@ -279,7 +281,7 @@ export default function MainPage() {
                 setFolderName('');
               }}
             >
-              Cancel
+              {t('main.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -288,7 +290,7 @@ export default function MainPage() {
               onClick={handleUpdateFolder}
               disabled={!folderName.trim()}
             >
-              Update
+              {t('common.save')}
             </Button>
           </div>
         </Modal>
@@ -302,12 +304,12 @@ export default function MainPage() {
         }}>
           <div className="text-center mb-6">
             <div className="text-6xl mb-4">🗑️</div>
-            <h2 className="text-xl font-semibold text-white mb-2">Delete Folder</h2>
-            <p className="text-white/70 text-sm mb-4">
-              Are you sure you want to delete "{selectedFolder.name}"?
+            <h2 className="font-heading text-xl font-semibold text-white mb-2">{t('common.delete')} {t('main.folders')}</h2>
+            <p className="font-body text-white/70 text-sm mb-4">
+              {t('trash.confirmDelete')} "{selectedFolder.name}"?
             </p>
-            <p className="text-red-300 text-sm font-medium">
-              This will also delete all notes inside this folder.
+            <p className="font-body text-red-300 text-sm font-medium">
+              {t('trash.cannotUndo')}
             </p>
           </div>
           <div className="flex gap-3">
@@ -320,7 +322,7 @@ export default function MainPage() {
                 setSelectedFolder(null);
               }}
             >
-              Cancel
+              {t('main.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -329,7 +331,7 @@ export default function MainPage() {
               onClick={handleConfirmDelete}
               className="bg-red-500 hover:bg-red-600"
             >
-              Delete
+              {t('common.delete')}
             </Button>
           </div>
         </Modal>

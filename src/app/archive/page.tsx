@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '../components/Sidebar';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Note {
   id: string;
@@ -19,6 +20,7 @@ export default function ArchivePage() {
   const [archivedNotes, setArchivedNotes] = useState<Note[]>([]);
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
   const router = useRouter();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const savedArchivedNotes = localStorage.getItem('archivedNotes');
@@ -70,7 +72,7 @@ export default function ArchivePage() {
       {/* Header */}
       <header className="bg-white/20 backdrop-blur-sm shadow-lg p-4 flex justify-between items-center relative z-10">
         <div className="w-10"></div>
-        <h1 className="text-xl font-bold text-gray-800 text-center">Archive</h1>
+        <h1 className="text-xl font-bold text-gray-800 text-center">{t('archive.title')}</h1>
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 hover:bg-gray-100 rounded-lg"
@@ -90,13 +92,13 @@ export default function ArchivePage() {
             onClick={handleSelectAll}
             className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
           >
-            {selectedNotes.length === archivedNotes.length ? 'Unselect All' : 'Select All'}
+            {selectedNotes.length === archivedNotes.length ? t('folder.unselectAll') : t('folder.selectAll')}
           </button>
           <button
             onClick={handleUnarchive}
             className="px-4 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"
           >
-            Unarchive ({selectedNotes.length})
+            {t('trash.restore')} ({selectedNotes.length})
           </button>
         </div>
       )}
@@ -110,8 +112,8 @@ export default function ArchivePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8l6 6m0 0l6-6m-6 6V3" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">No archived notes</h3>
-            <p className="text-gray-600">Archived notes will appear here</p>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('archive.noItems')}</h3>
+            <p className="text-gray-600">{t('archive.noItemsDesc')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -138,7 +140,7 @@ export default function ArchivePage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-800 truncate">{note.title}</h3>
                     <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                      <span>Archived</span>
+                      <span>{t('archive.archived')}</span>
                       <span>•</span>
                       <span>{new Date(note.createdAt).toLocaleDateString()}</span>
                     </div>
@@ -150,7 +152,7 @@ export default function ArchivePage() {
                       handleUnarchive();
                     }}
                     className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50/20 rounded-lg transition-all"
-                    title="Unarchive"
+                    title={t('trash.restore')}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />

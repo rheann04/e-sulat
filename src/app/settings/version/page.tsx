@@ -1,9 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function VersionPage() {
   const router = useRouter();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 relative overflow-hidden">
@@ -26,7 +28,7 @@ export default function VersionPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-800">Version</h1>
+        <h1 className="text-xl font-bold text-gray-800">{t('version.title')}</h1>
       </header>
 
       {/* Main Content */}
@@ -38,39 +40,39 @@ export default function VersionPage() {
             className="w-16 h-16 rounded-full mx-auto mb-4"
           />
           
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">E-Sulat</h2>
-          <p className="text-gray-600 mb-6">Your personal notes and reminder app</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">{t('version.appName')}</h2>
+          <p className="text-gray-600 mb-6">{t('version.appDesc')}</p>
           
           <div className="space-y-4 text-left max-w-sm mx-auto">
             <div className="flex justify-between">
-              <span className="text-gray-600">Version:</span>
+              <span className="text-gray-600">{t('version.version')}</span>
               <span className="font-medium">1.0.0</span>
             </div>
             
             <div className="flex justify-between">
-              <span className="text-gray-600">Build:</span>
+              <span className="text-gray-600">{t('version.build')}</span>
               <span className="font-medium">2024.12.14</span>
             </div>
             
             <div className="flex justify-between">
-              <span className="text-gray-600">Platform:</span>
+              <span className="text-gray-600">{t('version.platform')}</span>
               <span className="font-medium">Web</span>
             </div>
             
             <div className="flex justify-between">
-              <span className="text-gray-600">Framework:</span>
+              <span className="text-gray-600">{t('version.framework')}</span>
               <span className="font-medium">Next.js</span>
             </div>
           </div>
           
           <div className="mt-8 pt-6 border-t border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">What's New</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('version.whatsNew')}</h3>
             <ul className="text-left text-gray-600 space-y-1">
-              <li>• Create and organize notes in folders</li>
-              <li>• Customize note themes and fonts</li>
-              <li>• Archive and trash functionality</li>
-              <li>• Multi-language support</li>
-              <li>• Responsive design for all devices</li>
+              <li>{t('version.feature1')}</li>
+              <li>{t('version.feature2')}</li>
+              <li>{t('version.feature3')}</li>
+              <li>{t('version.feature4')}</li>
+              <li>{t('version.feature5')}</li>
             </ul>
           </div>
         </div>

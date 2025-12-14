@@ -26,7 +26,7 @@ export default function Button({
   className = '',
   type = 'button'
 }: ButtonProps) {
-  const baseClasses = 'font-bold rounded-xl sm:rounded-2xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed hover-lift active:scale-95 flex items-center justify-center gap-2 sm:gap-3 relative overflow-hidden backdrop-blur-xl touch-target';
+  const baseClasses = 'font-body font-bold rounded-xl sm:rounded-2xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed hover-lift active:scale-95 flex items-center justify-center gap-2 sm:gap-3 relative overflow-hidden backdrop-blur-xl touch-target';
   
   const variantClasses = {
     primary: 'bg-gradient-sunset text-white hover:shadow-glow-strong focus:ring-orange-400 disabled:bg-gray-300 shadow-glass-medium border border-white/20 disabled:opacity-50',

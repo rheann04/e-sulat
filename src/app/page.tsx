@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import SplashScreen from './components/SplashScreen';
 import { StorageHelpers } from './utils/storage';
+import { useLanguage } from './contexts/LanguageContext';
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
@@ -11,6 +12,7 @@ export default function Home() {
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   // Ensure we're on the client side to prevent hydration issues
   useEffect(() => {
@@ -89,12 +91,11 @@ export default function Home() {
             </div>
             <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-accent opacity-20 animate-pulse"></div>
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6 drop-shadow-lg tracking-wide">
-            Welcome to E-Sulat
+          <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6 drop-shadow-lg tracking-tight">
+            {t('welcome.title')}
           </h1>
-          <p className="text-white/90 text-base sm:text-lg lg:text-xl leading-relaxed drop-shadow-md font-medium">
-            Your personal notes and notepad app. Create, organize, and manage your notes with ease. 
-            Keep track of your thoughts, ideas, and reminders all in one place.
+          <p className="font-body text-white/90 text-base sm:text-lg lg:text-xl leading-relaxed drop-shadow-md font-medium">
+            {t('welcome.description')}
           </p>
         </div>
         
@@ -109,16 +110,16 @@ export default function Home() {
               />
               <div className="absolute inset-0 rounded-lg bg-gradient-accent opacity-20 group-hover:opacity-30 transition-opacity"></div>
             </div>
-            <span className="font-medium">Don't show me again</span>
+            <span className="font-body font-medium">{t('welcome.dontShowAgain')}</span>
           </label>
         </div>
         
         <button
           onClick={handleGetStarted}
-          className="bg-gradient-sunset hover:shadow-glow-strong text-white font-bold touch-target py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl w-full transition-all duration-300 hover-lift focus:outline-none focus:ring-4 focus:ring-orange-300/50 text-base sm:text-lg shadow-glass-medium border border-white/20 group"
+          className="font-body bg-gradient-sunset hover:shadow-glow-strong text-white font-bold touch-target py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl w-full transition-all duration-300 hover-lift focus:outline-none focus:ring-4 focus:ring-orange-300/50 text-base sm:text-lg shadow-glass-medium border border-white/20 group"
         >
           <div className="flex items-center justify-center gap-2 sm:gap-3">
-            <span>Get Started</span>
+            <span>{t('welcome.getStarted')}</span>
             <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>

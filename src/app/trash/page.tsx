@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Modal from '../components/Modal';
 import { StorageHelpers } from '../utils/storage';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Note {
   id: string;
@@ -30,6 +31,7 @@ interface TrashedItem {
 
 export default function TrashPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { t } = useLanguage();
   const [trashedItems, setTrashedItems] = useState<TrashedItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -132,7 +134,7 @@ export default function TrashPage() {
       {/* Header */}
       <header className="bg-white/20 backdrop-blur-sm shadow-lg p-4 flex justify-between items-center relative z-10">
         <div className="w-10"></div>
-        <h1 className="text-xl font-bold text-gray-800 text-center">Trash</h1>
+        <h1 className="text-xl font-bold text-gray-800 text-center">{t('trash.title')}</h1>
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 hover:bg-gray-100 rounded-lg"
@@ -149,13 +151,13 @@ export default function TrashPage() {
       {trashedItems.length > 0 && (
         <div className="bg-white/20 backdrop-blur-sm border-b border-white/30 p-4 flex justify-between items-center relative z-10">
           <p className="text-sm text-gray-700">
-            Items in trash will be deleted after 30 days
+{t('trash.autoDelete')}
           </p>
           <button
             onClick={() => setShowEmptyTrashModal(true)}
             className="px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors"
           >
-            Empty Trash
+            {t('trash.emptyTrash')}
           </button>
         </div>
       )}
@@ -167,7 +169,7 @@ export default function TrashPage() {
             onClick={handleSelectAll}
             className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
           >
-            {selectedItems.length === trashedItems.length ? 'Unselect All' : 'Select All'}
+            {selectedItems.length === trashedItems.length ? t('folder.unselectAll') : t('folder.selectAll')}
           </button>
         </div>
       )}
@@ -284,10 +286,10 @@ export default function TrashPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Permanent Delete</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">{t('trash.permanentDelete')}</h2>
               <p className="text-white/80">
-                Are you sure you want to delete "{itemToDelete.type === 'note' ? (itemToDelete.data as Note).title : (itemToDelete.data as Folder).name}"? 
-                This action cannot be undone.
+                {t('trash.confirmDelete')} "{itemToDelete.type === 'note' ? (itemToDelete.data as Note).title : (itemToDelete.data as Folder).name}"? 
+                {t('trash.cannotUndo')}
               </p>
             </div>
             
@@ -322,10 +324,10 @@ export default function TrashPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Empty Trash</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">{t('trash.emptyTrash')}</h2>
               <p className="text-white/80">
-                Are you sure you want to permanently delete all {trashedItems.length} items in trash? 
-                This action cannot be undone.
+                {t('trash.confirmEmptyTrash')} {trashedItems.length} {t('trash.itemsInTrash')}? 
+                {t('trash.cannotUndo')}
               </p>
             </div>
             
@@ -340,7 +342,7 @@ export default function TrashPage() {
                 onClick={handleEmptyTrash}
                 className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all font-medium"
               >
-                Empty Trash
+{t('trash.emptyTrash')}
               </button>
             </div>
           </div>

@@ -128,6 +128,7 @@ export default function FolderPage() {
     if (selectedNotes.length === filteredNotes.length) {
       setSelectedNotes([]);
       setShowActions(false);
+      setSelectMode(false);
     } else {
       const allIds = filteredNotes.map(note => note.id);
       setSelectedNotes(allIds);
@@ -251,40 +252,49 @@ export default function FolderPage() {
           {!selectMode ? (
             <button
               onClick={handleEnterSelectMode}
-              className="touch-target px-3 sm:px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg sm:rounded-xl font-medium text-sm transition-all duration-200 shadow-md"
+              className="touch-target px-4 sm:px-6 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl sm:rounded-2xl font-semibold text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
             >
-              Select
+              ✓ Select
             </button>
           ) : (
             <button
               onClick={handleExitSelectMode}
-              className="touch-target px-3 sm:px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg sm:rounded-xl font-medium text-sm transition-all duration-200 shadow-md"
+              className="touch-target px-4 sm:px-6 py-2.5 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white rounded-xl sm:rounded-2xl font-semibold text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
             >
-              Cancel
+              ✕ Cancel
             </button>
           )}
         </div>
 
         {/* Action Buttons */}
         {selectMode && showActions && (
-          <div className="flex gap-1 sm:gap-2 mb-3 sm:mb-4 p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl backdrop-blur-sm overflow-x-auto hide-scrollbar-mobile">
+          <div className="flex gap-2 sm:gap-3 mb-3 sm:mb-4 p-3 sm:p-4 bg-white/30 rounded-xl sm:rounded-2xl backdrop-blur-md border border-white/40 shadow-xl overflow-x-auto hide-scrollbar-mobile">
             <button
               onClick={handleSelectAll}
-              className="touch-target px-3 sm:px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg sm:rounded-xl font-medium transition-all duration-200 shadow-md text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
+              className="touch-target px-4 sm:px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 text-xs sm:text-sm whitespace-nowrap flex-shrink-0 flex items-center gap-2"
             >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               {selectedNotes.length === filteredNotes.length ? 'Unselect All' : 'Select All'}
             </button>
             <button
               onClick={handleArchive}
-              className="touch-target px-3 sm:px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg sm:rounded-xl font-medium transition-all duration-200 shadow-md text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
+              className="touch-target px-4 sm:px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 text-xs sm:text-sm whitespace-nowrap flex-shrink-0 flex items-center gap-2"
             >
-              📦 Archive
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8l6 6V9l6-6V3h-5L9 6H4v2z" />
+              </svg>
+              Archive
             </button>
             <button
               onClick={handleDelete}
-              className="touch-target px-3 sm:px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg sm:rounded-xl font-medium transition-all duration-200 shadow-md text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
+              className="touch-target px-4 sm:px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 text-xs sm:text-sm whitespace-nowrap flex-shrink-0 flex items-center gap-2"
             >
-              🗑️ Delete
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Delete
             </button>
           </div>
         )}
