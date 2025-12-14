@@ -11,6 +11,7 @@ interface Note {
   folderId: string;
   createdAt: Date;
   status: 'pending' | 'completed';
+  photos?: string[]; // Array of base64 encoded images
 }
 
 export default function ArchivePage() {
@@ -57,18 +58,19 @@ export default function ArchivePage() {
   };
 
   return (
-    <div className="min-h-screen bg-yellow-400">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 relative overflow-hidden">
+      {/* Enhanced Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-pink-300/20 to-purple-400/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-300/20 to-cyan-400/20 rounded-full blur-3xl animate-float" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] bg-gradient-to-br from-yellow-200/10 to-orange-300/10 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-green-300/15 to-teal-400/15 rounded-full blur-2xl animate-float" style={{animationDelay: '3s'}}></div>
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-br from-indigo-300/15 to-purple-400/15 rounded-full blur-2xl animate-float" style={{animationDelay: '4s'}}></div>
+      </div>
       {/* Header */}
-      <header className="bg-white shadow-sm p-4 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
-            ←
-          </button>
-          <h1 className="text-xl font-bold text-gray-800">Archive</h1>
-        </div>
+      <header className="bg-white/20 backdrop-blur-sm shadow-lg p-4 flex justify-between items-center relative z-10">
+        <div className="w-10"></div>
+        <h1 className="text-xl font-bold text-gray-800 text-center">Archive</h1>
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 hover:bg-gray-100 rounded-lg"
@@ -83,49 +85,79 @@ export default function ArchivePage() {
 
       {/* Action Buttons */}
       {selectedNotes.length > 0 && (
-        <div className="bg-white border-b p-4 flex gap-2">
+        <div className="bg-white/20 backdrop-blur-sm border-b border-white/30 p-4 flex gap-2 relative z-10">
           <button
             onClick={handleSelectAll}
-            className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium"
+            className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
           >
             {selectedNotes.length === archivedNotes.length ? 'Unselect All' : 'Select All'}
           </button>
           <button
             onClick={handleUnarchive}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg font-medium"
+            className="px-4 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"
           >
-            Unarchive
+            Unarchive ({selectedNotes.length})
           </button>
         </div>
       )}
 
       {/* Main Content */}
-      <main className="p-4">
+      <main className="relative z-10 p-4">
         {archivedNotes.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-600 text-lg">No archived notes</div>
+            <div className="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8l6 6m0 0l6-6m-6 6V3" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">No archived notes</h3>
+            <p className="text-gray-600">Archived notes will appear here</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {archivedNotes.map((note) => (
-              <div
-                key={note.id}
-                className="bg-white p-4 rounded-lg shadow-sm flex items-center gap-3"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedNotes.includes(note.id)}
-                  onChange={() => handleSelectNote(note.id)}
-                  className="rounded"
-                />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-800">{note.title}</h3>
-                  <p className="text-sm text-gray-500">
-                    Archived • {new Date(note.createdAt).toLocaleDateString()}
-                  </p>
+            {archivedNotes
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+              .map((note) => (
+                <div
+                  key={note.id}
+                  className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/30 transition-all hover:bg-white/30 flex items-center gap-3"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedNotes.includes(note.id)}
+                    onChange={() => handleSelectNote(note.id)}
+                    className="w-5 h-5 rounded border-2 border-gray-400 text-blue-500 focus:ring-blue-500 focus:ring-2"
+                  />
+                  
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-amber-400 to-amber-500 text-white shadow-md">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-800 truncate">{note.title}</h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                      <span>Archived</span>
+                      <span>•</span>
+                      <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setSelectedNotes([note.id]);
+                      handleUnarchive();
+                    }}
+                    className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50/20 rounded-lg transition-all"
+                    title="Unarchive"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                    </svg>
+                  </button>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </main>

@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function WelcomeScreen() {
-  const [showWelcome, setShowWelcome] = useState(true);
+export default function WelcomeScreen({ navigation }: any) {
   const [dontShowAgain, setDontShowAgain] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     checkWelcomeStatus();
@@ -17,8 +14,7 @@ export default function WelcomeScreen() {
     try {
       const hideWelcome = await AsyncStorage.getItem('hideWelcome');
       if (hideWelcome === 'true') {
-        setShowWelcome(false);
-        router.replace('/main');
+        navigation.replace('Main');
       }
     } catch (error) {
       console.error('Error checking welcome status:', error);
@@ -30,16 +26,12 @@ export default function WelcomeScreen() {
       if (dontShowAgain) {
         await AsyncStorage.setItem('hideWelcome', 'true');
       }
-      router.replace('/main');
+      navigation.replace('Main');
     } catch (error) {
       console.error('Error saving welcome preference:', error);
-      router.replace('/main');
+      navigation.replace('Main');
     }
   };
-
-  if (!showWelcome) {
-    return null;
-  }
 
   return (
     <SafeAreaView style={styles.container}>

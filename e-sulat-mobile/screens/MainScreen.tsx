@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, TextInput, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Sidebar from '../components/Sidebar';
 
 interface Folder {
   id: string;
@@ -12,11 +10,9 @@ interface Folder {
 }
 
 export default function MainScreen() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showNewFolderModal, setShowNewFolderModal] = useState(false);
   const [folderName, setFolderName] = useState('');
   const [folders, setFolders] = useState<Folder[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     loadFolders();
@@ -54,17 +50,10 @@ export default function MainScreen() {
     }
   };
 
-  const handleFolderPress = (folderId: string) => {
-    router.push(`/folder/${folderId}`);
-  };
-
   const renderFolder = ({ item }: { item: Folder }) => (
-    <TouchableOpacity 
-      style={styles.folderCard}
-      onPress={() => handleFolderPress(item.id)}
-    >
+    <TouchableOpacity style={styles.folderCard}>
       <View style={styles.folderHeader}>
-        <Text style={styles.folderIcon}>📁</Text>
+        <View style={styles.folderIconContainer} />
         <Text style={styles.folderName}>{item.name}</Text>
       </View>
       <Text style={styles.folderDate}>
@@ -83,10 +72,7 @@ export default function MainScreen() {
           </View>
           <Text style={styles.title}>E-SULAT</Text>
         </View>
-        <TouchableOpacity 
-          style={styles.menuButton}
-          onPress={() => setSidebarOpen(true)}
-        >
+        <TouchableOpacity style={styles.menuButton}>
           <View style={styles.menuLine} />
           <View style={styles.menuLine} />
           <View style={styles.menuLine} />
@@ -117,9 +103,6 @@ export default function MainScreen() {
           <Text style={styles.newFolderButtonText}>NEW FOLDER</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* New Folder Modal */}
       <Modal
@@ -233,8 +216,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  folderIcon: {
-    fontSize: 20,
+  folderIconContainer: {
+    width: 20,
+    height: 20,
+    backgroundColor: '#3b82f6',
+    borderRadius: 4,
     marginRight: 8,
   },
   folderName: {

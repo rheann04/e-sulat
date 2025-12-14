@@ -2,8 +2,13 @@
 // This makes it easier to port to React Native later
 
 class WebStorage {
+  private isClient(): boolean {
+    return typeof window !== 'undefined';
+  }
+
   async getItem(key: string): Promise<string | null> {
     try {
+      if (!this.isClient()) return null;
       return localStorage.getItem(key);
     } catch (error) {
       console.error('Storage getItem error:', error);
@@ -13,6 +18,7 @@ class WebStorage {
 
   async setItem(key: string, value: string): Promise<void> {
     try {
+      if (!this.isClient()) return;
       localStorage.setItem(key, value);
     } catch (error) {
       console.error('Storage setItem error:', error);
@@ -21,6 +27,7 @@ class WebStorage {
 
   async removeItem(key: string): Promise<void> {
     try {
+      if (!this.isClient()) return;
       localStorage.removeItem(key);
     } catch (error) {
       console.error('Storage removeItem error:', error);
@@ -29,6 +36,7 @@ class WebStorage {
 
   async clear(): Promise<void> {
     try {
+      if (!this.isClient()) return;
       localStorage.clear();
     } catch (error) {
       console.error('Storage clear error:', error);
@@ -37,6 +45,7 @@ class WebStorage {
 
   async getAllKeys(): Promise<string[]> {
     try {
+      if (!this.isClient()) return [];
       return Object.keys(localStorage);
     } catch (error) {
       console.error('Storage getAllKeys error:', error);

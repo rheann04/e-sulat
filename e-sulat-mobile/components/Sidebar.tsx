@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Animated } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -8,15 +8,18 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const router = useRouter();
+  const navigation = useNavigation();
 
-  const handleNavigation = (path: string) => {
-    router.push(path);
+  const handleNavigation = (screenName: string) => {
+    navigation.navigate(screenName as never);
     onClose();
   };
 
   const handleExit = () => {
-    router.replace('/');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Welcome' as never }],
+    });
     onClose();
   };
 
@@ -36,35 +39,35 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <View style={styles.menuItems}>
               <TouchableOpacity 
                 style={styles.menuItem}
-                onPress={() => handleNavigation('/main')}
+                onPress={() => handleNavigation('Main')}
               >
                 <Text style={styles.menuText}>Notes (Main Page)</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
                 style={styles.menuItem}
-                onPress={() => handleNavigation('/reminder')}
+                onPress={() => handleNavigation('Reminder')}
               >
                 <Text style={styles.menuText}>Reminder</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
                 style={styles.menuItem}
-                onPress={() => handleNavigation('/settings')}
+                onPress={() => handleNavigation('Settings')}
               >
                 <Text style={styles.menuText}>Settings</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
                 style={styles.menuItem}
-                onPress={() => handleNavigation('/archive')}
+                onPress={() => handleNavigation('Archive')}
               >
                 <Text style={styles.menuText}>Archive</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
                 style={styles.menuItem}
-                onPress={() => handleNavigation('/trash')}
+                onPress={() => handleNavigation('Trash')}
               >
                 <Text style={styles.menuText}>Trash</Text>
               </TouchableOpacity>
@@ -87,55 +90,77 @@ const styles = StyleSheet.create({
   },
   overlayTouch: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   sidebar: {
-    width: '50%',
-    backgroundColor: 'white',
+    width: '75%',
+    backgroundColor: '#FEF3C7', // Warm yellow background
     shadowColor: '#000',
-    shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOffset: { width: -4, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    borderTopLeftRadius: 24,
+    borderBottomLeftRadius: 24,
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: 24,
+    paddingTop: 32,
   },
   header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#374151',
-    marginBottom: 24,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#92400E', // Deep amber for contrast
+    marginBottom: 32,
+    paddingBottom: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: '#F59E0B', // Golden accent line
+    letterSpacing: 1.2,
+    textAlign: 'center',
   },
   menuItems: {
     flex: 1,
+    gap: 8,
   },
   menuItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    marginVertical: 4,
-    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginVertical: 3,
+    borderRadius: 16,
+    backgroundColor: 'rgba(251, 191, 36, 0.3)', // Subtle yellow tint
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.2)',
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   menuText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#374151',
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#78350F', // Rich brown for readability
+    textAlign: 'center',
+    letterSpacing: 0.5,
   },
   exitButton: {
-    backgroundColor: '#ef4444',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    backgroundColor: '#DC2626', // Modern red
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 24,
+    shadowColor: '#DC2626',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   exitButtonText: {
     color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: 0.8,
   },
 });

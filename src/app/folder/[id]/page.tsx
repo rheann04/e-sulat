@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Modal from '../../components/Modal';
-import Header from '../../components/Header';
+
 import { StorageHelpers } from '../../utils/storage';
 
 interface Note {
@@ -14,6 +14,7 @@ interface Note {
   createdAt: Date;
   status: 'pending' | 'completed';
   isSelected?: boolean;
+  photos?: string[]; // Array of base64 encoded images
 }
 
 interface Folder {
@@ -30,6 +31,7 @@ export default function FolderPage() {
   const [noteTitle, setNoteTitle] = useState('');
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
   const [showActions, setShowActions] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
   const router = useRouter();
   const params = useParams();
   const folderId = params.id as string;
@@ -43,7 +45,10 @@ export default function FolderPage() {
 
       // Load notes
       const allNotes = await StorageHelpers.getNotes();
-      setNotes(allNotes.filter((note: Note) => note.folderId === folderId));
+      const folderNotes = allNotes.filter((note: Note) => note.folderId === folderId);
+      // Sort notes alphabetically by title
+      const sortedNotes = folderNotes.sort((a: Note, b: Note) => a.title.localeCompare(b.title));
+      setNotes(sortedNotes);
     };
     
     loadData();
@@ -69,7 +74,10 @@ export default function FolderPage() {
       const updatedNotes = [...allNotes, newNote];
       
       await StorageHelpers.setNotes(updatedNotes);
-      setNotes(prev => [...prev, newNote]);
+      const folderNotes = [...notes, newNote];
+      // Sort notes alphabetically by title
+      const sortedNotes = folderNotes.sort((a: Note, b: Note) => a.title.localeCompare(b.title));
+      setNotes(sortedNotes);
       setNoteTitle('');
       setShowNewNoteModal(false);
     }
@@ -87,6 +95,33 @@ export default function FolderPage() {
       setShowActions(newSelected.length > 0);
       return newSelected;
     });
+  };
+
+  const handleToggleStatus = async (noteId: string) => {
+    const allNotes = await StorageHelpers.getNotes();
+    const updatedNotes = allNotes.map((note: Note) => {
+      if (note.id === noteId) {
+        return { ...note, status: note.status === 'pending' ? 'completed' : 'pending' };
+      }
+      return note;
+    });
+    
+    await StorageHelpers.setNotes(updatedNotes);
+    const folderNotes = updatedNotes.filter((note: Note) => note.folderId === folderId);
+    const sortedNotes = folderNotes.sort((a: Note, b: Note) => a.title.localeCompare(b.title));
+    setNotes(sortedNotes);
+  };
+
+  const handleEnterSelectMode = () => {
+    setSelectMode(true);
+    setSelectedNotes([]);
+    setShowActions(false);
+  };
+
+  const handleExitSelectMode = () => {
+    setSelectMode(false);
+    setSelectedNotes([]);
+    setShowActions(false);
   };
 
   const handleSelectAll = () => {
@@ -110,160 +145,286 @@ export default function FolderPage() {
     await StorageHelpers.setNotes(remainingNotes);
     await StorageHelpers.setArchivedNotes([...archived, ...notesToArchive]);
     
-    setNotes(remainingNotes.filter((note: Note) => note.folderId === folderId));
+    const folderNotes = remainingNotes.filter((note: Note) => note.folderId === folderId);
+    // Sort notes alphabetically by title
+    const sortedNotes = folderNotes.sort((a: Note, b: Note) => a.title.localeCompare(b.title));
+    setNotes(sortedNotes);
     setSelectedNotes([]);
     setShowActions(false);
+    setSelectMode(false);
   };
 
   const handleDelete = async () => {
     const allNotes = await StorageHelpers.getNotes();
-    const trashed = await StorageHelpers.getTrashedNotes();
     
     const notesToTrash = allNotes.filter((note: Note) => selectedNotes.includes(note.id));
     const remainingNotes = allNotes.filter((note: Note) => !selectedNotes.includes(note.id));
     
     await StorageHelpers.setNotes(remainingNotes);
-    await StorageHelpers.setTrashedNotes([...trashed, ...notesToTrash]);
     
-    setNotes(remainingNotes.filter((note: Note) => note.folderId === folderId));
+    // Add notes to unified trash system
+    const savedTrashedItems = localStorage.getItem('trashedItems');
+    const trashedItems = savedTrashedItems ? JSON.parse(savedTrashedItems) : [];
+    
+    const trashedNotes = notesToTrash.map((note: Note) => ({
+      id: note.id,
+      type: 'note' as const,
+      data: note,
+      deletedAt: new Date()
+    }));
+    
+    const updatedTrashedItems = [...trashedItems, ...trashedNotes];
+    localStorage.setItem('trashedItems', JSON.stringify(updatedTrashedItems));
+    
+    const folderNotes = remainingNotes.filter((note: Note) => note.folderId === folderId);
+    // Sort notes alphabetically by title
+    const sortedNotes = folderNotes.sort((a: Note, b: Note) => a.title.localeCompare(b.title));
+    setNotes(sortedNotes);
     setSelectedNotes([]);
     setShowActions(false);
+    setSelectMode(false);
   };
 
   return (
-    <div className="min-h-screen bg-yellow-400">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 relative overflow-hidden">
+      {/* Enhanced Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-pink-300/20 to-purple-400/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-300/20 to-cyan-400/20 rounded-full blur-3xl animate-float" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] bg-gradient-to-br from-yellow-200/10 to-orange-300/10 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-green-300/15 to-teal-400/15 rounded-full blur-2xl animate-float" style={{animationDelay: '3s'}}></div>
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-br from-indigo-300/15 to-purple-400/15 rounded-full blur-2xl animate-float" style={{animationDelay: '4s'}}></div>
+      </div>
       {/* Header */}
-      <header className="bg-white shadow-sm p-4">
-        <div className="flex items-center gap-3 mb-4">
+      <header className="bg-white/20 backdrop-blur-sm shadow-lg header-responsive sticky top-0 z-10 relative safe-area-padding">
+        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
           <button
             onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className="touch-target p-2 hover:bg-white/20 rounded-lg sm:rounded-xl transition-all duration-200 text-gray-700 hover:text-gray-900 flex-shrink-0"
           >
-            ←
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
           </button>
-          <div className="flex items-center gap-3 flex-1">
-            <img
-              src="/logo.png"
-              alt="E-Sulat Logo"
-              className="w-8 h-8 rounded-full"
-            />
-            <h1 className="text-xl font-bold text-gray-800">{folder?.name || 'Folder'}</h1>
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+            <div className="text-xl sm:text-2xl flex-shrink-0">📁</div>
+            <h1 className="text-lg sm:text-xl font-bold text-gray-800 truncate">{folder?.name || 'Folder'}</h1>
           </div>
         </div>
         
         {/* Filter Buttons */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex w-full mb-3 sm:mb-4">
           <button
             onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-lg font-medium ${
-              filter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+            className={`flex-1 touch-target py-2 rounded-l-lg sm:rounded-l-xl font-medium transition-all duration-200 text-sm sm:text-base ${
+              filter === 'all' 
+                ? 'bg-blue-500 text-white shadow-lg transform scale-105 z-10' 
+                : 'bg-white/30 text-gray-700 hover:bg-white/40'
             }`}
           >
-            ALL
+            All ({notes.length})
           </button>
           <button
             onClick={() => setFilter('pending')}
-            className={`px-4 py-2 rounded-lg font-medium ${
-              filter === 'pending' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+            className={`flex-1 touch-target py-2 font-medium transition-all duration-200 text-sm sm:text-base border-l border-r border-white/20 ${
+              filter === 'pending' 
+                ? 'bg-orange-500 text-white shadow-lg transform scale-105 z-10' 
+                : 'bg-white/30 text-gray-700 hover:bg-white/40'
             }`}
           >
-            PENDING
+            Pending ({notes.filter(n => n.status === 'pending').length})
           </button>
           <button
             onClick={() => setFilter('completed')}
-            className={`px-4 py-2 rounded-lg font-medium ${
-              filter === 'completed' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+            className={`flex-1 touch-target py-2 rounded-r-lg sm:rounded-r-xl font-medium transition-all duration-200 text-sm sm:text-base ${
+              filter === 'completed' 
+                ? 'bg-green-500 text-white shadow-lg transform scale-105 z-10' 
+                : 'bg-white/30 text-gray-700 hover:bg-white/40'
             }`}
           >
-            COMPLETED
+            Done ({notes.filter(n => n.status === 'completed').length})
           </button>
         </div>
 
+        {/* Select Mode Button */}
+        <div className="flex gap-2 mb-3 sm:mb-4">
+          {!selectMode ? (
+            <button
+              onClick={handleEnterSelectMode}
+              className="touch-target px-3 sm:px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg sm:rounded-xl font-medium text-sm transition-all duration-200 shadow-md"
+            >
+              Select
+            </button>
+          ) : (
+            <button
+              onClick={handleExitSelectMode}
+              className="touch-target px-3 sm:px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg sm:rounded-xl font-medium text-sm transition-all duration-200 shadow-md"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+
         {/* Action Buttons */}
-        {showActions && (
-          <div className="flex gap-2 mb-4">
+        {selectMode && showActions && (
+          <div className="flex gap-1 sm:gap-2 mb-3 sm:mb-4 p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl backdrop-blur-sm overflow-x-auto hide-scrollbar-mobile">
             <button
               onClick={handleSelectAll}
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium"
+              className="touch-target px-3 sm:px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg sm:rounded-xl font-medium transition-all duration-200 shadow-md text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
             >
               {selectedNotes.length === filteredNotes.length ? 'Unselect All' : 'Select All'}
             </button>
             <button
               onClick={handleArchive}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg font-medium"
+              className="touch-target px-3 sm:px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg sm:rounded-xl font-medium transition-all duration-200 shadow-md text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
             >
-              Archive
+              📦 Archive
             </button>
             <button
               onClick={handleDelete}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg font-medium"
+              className="touch-target px-3 sm:px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg sm:rounded-xl font-medium transition-all duration-200 shadow-md text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
             >
-              Delete
+              🗑️ Delete
             </button>
           </div>
         )}
       </header>
 
       {/* Notes List */}
-      <main className="p-4 pb-20">
-        <div className="space-y-3">
-          {filteredNotes.map((note) => (
-            <div
-              key={note.id}
-              className="bg-white p-4 rounded-lg shadow-sm flex items-center gap-3"
+      <main className="relative z-10 container-responsive spacing-responsive pb-20 sm:pb-24">
+        {filteredNotes.length === 0 ? (
+          <div className="text-center py-8 sm:py-12">
+            <div className="text-4xl sm:text-5xl lg:text-6xl mb-3 sm:mb-4">📝</div>
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">No notes yet</h3>
+            <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Start creating notes to organize your thoughts</p>
+            <button
+              onClick={() => setShowNewNoteModal(true)}
+              className="touch-target px-4 sm:px-6 py-2 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg sm:rounded-xl font-medium transition-all duration-200 shadow-lg text-sm sm:text-base"
             >
-              <input
-                type="checkbox"
-                checked={selectedNotes.includes(note.id)}
-                onChange={() => handleSelectNote(note.id)}
-                className="rounded"
-              />
+              Create First Note
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3 sm:space-y-4">
+            {filteredNotes.map((note, index) => (
               <div
-                onClick={() => handleNoteClick(note.id)}
-                className="flex-1 cursor-pointer"
+                key={note.id}
+                className="card-responsive bg-white/30 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-3 sm:gap-4 group hover:bg-white/40"
+                style={{animationDelay: `${index * 0.1}s`}}
               >
-                <h3 className="font-semibold text-gray-800">{note.title}</h3>
-                <p className="text-sm text-gray-500">
-                  {new Date(note.createdAt).toLocaleDateString()} • {note.status}
-                </p>
+                {selectMode && (
+                  <input
+                    type="checkbox"
+                    checked={selectedNotes.includes(note.id)}
+                    onChange={() => handleSelectNote(note.id)}
+                    className="w-3 h-3 sm:w-4 sm:h-4 rounded-md border-2 border-gray-300 text-blue-500 focus:ring-blue-500 flex-shrink-0"
+                  />
+                )}
+                {!selectMode && (
+                  <button
+                    onClick={() => handleToggleStatus(note.id)}
+                    className={`touch-target w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
+                      note.status === 'completed' 
+                        ? 'bg-green-500 border-green-500 text-white shadow-md' 
+                        : 'border-gray-400 hover:border-green-400 hover:bg-green-50'
+                    }`}
+                  >
+                    {note.status === 'completed' && (
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </button>
+                )}
+                <div
+                  onClick={() => !selectMode && handleNoteClick(note.id)}
+                  className={`flex-1 min-w-0 ${!selectMode ? 'cursor-pointer' : ''}`}
+                >
+                  <h3 className={`font-semibold text-base sm:text-lg mb-1 transition-all duration-200 truncate ${
+                    note.status === 'completed' 
+                      ? 'text-gray-500 line-through' 
+                      : 'text-gray-800 group-hover:text-gray-900'
+                  }`}>
+                    {note.title}
+                  </h3>
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                    <span className="truncate">{new Date(note.createdAt).toLocaleDateString()}</span>
+                    <span className="flex-shrink-0">•</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
+                      note.status === 'completed' 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-orange-100 text-orange-700'
+                    }`}>
+                      {note.status === 'completed' ? '✓ Done' : '⏳ Pending'}
+                    </span>
+                    {note.photos && note.photos.length > 0 && (
+                      <>
+                        <span className="flex-shrink-0">•</span>
+                        <span className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium flex-shrink-0">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {note.photos.length}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {!selectMode && (
+                  <div className="text-gray-400 group-hover:text-gray-600 transition-colors flex-shrink-0">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
 
       {/* Add Note Button */}
       <button
         onClick={() => setShowNewNoteModal(true)}
-        className="fixed bottom-4 right-4 w-14 h-14 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 flex items-center justify-center text-2xl"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 flex items-center justify-center text-xl sm:text-2xl transition-all duration-300 group touch-target safe-area-padding"
       >
-        +
+        <svg className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
       </button>
 
       {/* New Note Modal */}
       {showNewNoteModal && (
         <Modal onClose={() => setShowNewNoteModal(false)}>
-          <h2 className="text-xl font-bold mb-4">Create New Note</h2>
-          <input
-            type="text"
-            value={noteTitle}
-            onChange={(e) => setNoteTitle(e.target.value)}
-            placeholder="Enter note title"
-            className="w-full p-3 border border-gray-300 rounded-lg mb-4"
-            autoFocus
-          />
-          <div className="flex gap-2">
+          <div className="text-center mb-6">
+            <div className="text-6xl mb-4">📝</div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">New Note</h2>
+            <p className="text-gray-500 text-sm">What's on your mind?</p>
+          </div>
+          <div className="mb-6">
+            <input
+              type="text"
+              value={noteTitle}
+              onChange={(e) => setNoteTitle(e.target.value)}
+              placeholder="Note title"
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-200 text-base"
+              autoFocus
+              onKeyDown={(e) => e.key === 'Enter' && handleCreateNote()}
+            />
+          </div>
+          <div className="flex gap-3">
             <button
               onClick={() => setShowNewNoteModal(false)}
-              className="flex-1 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex-1 py-3 px-4 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium"
             >
               Cancel
             </button>
             <button
               onClick={handleCreateNote}
-              className="flex-1 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              disabled={!noteTitle.trim()}
+              className="flex-1 py-3 px-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
             >
-              Create
+              Create Note
             </button>
           </div>
         </Modal>

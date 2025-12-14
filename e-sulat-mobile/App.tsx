@@ -1,6 +1,18 @@
-import 'react-native-gesture-handler';
-import { Slot } from 'expo-router';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import WelcomeScreen from './screens/WelcomeScreen';
+import MainScreen from './screens/MainScreen';
+
+const Stack = createStackNavigator();
 
 export default function App() {
-  return <Slot />;
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="Main" component={MainScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
