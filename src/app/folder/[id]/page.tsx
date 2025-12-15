@@ -32,6 +32,7 @@ export default function FolderPage() {
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
   const [showActions, setShowActions] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
+  const [noteTitleError, setNoteTitleError] = useState('');
   const router = useRouter();
   const params = useParams();
   const folderId = params.id as string;
@@ -61,10 +62,21 @@ export default function FolderPage() {
   });
 
   const handleCreateNote = async () => {
-    if (noteTitle.trim()) {
+    const trimmedTitle = noteTitle.trim();
+    if (trimmedTitle) {
+      // Check for duplicate note titles in this folder (case-insensitive)
+      const existingNote = notes.find(note => 
+        note.title.toLowerCase() === trimmedTitle.toLowerCase()
+      );
+      
+      if (existingNote) {
+        setNoteTitleError(t('error.duplicateNote'));
+        return;
+      }
+      
       const newNote: Note = {
         id: Date.now().toString(),
-        title: noteTitle.trim(),
+        title: trimmedTitle,
         content: '',
         folderId,
         createdAt: new Date(),
@@ -80,7 +92,15 @@ export default function FolderPage() {
       const sortedNotes = folderNotes.sort((a: Note, b: Note) => a.title.localeCompare(b.title));
       setNotes(sortedNotes);
       setNoteTitle('');
+      setNoteTitleError('');
       setShowNewNoteModal(false);
+    }
+  };
+
+  const handleNoteTitleChange = (value: string) => {
+    setNoteTitle(value);
+    if (noteTitleError) {
+      setNoteTitleError('');
     }
   };
 
@@ -406,26 +426,36 @@ export default function FolderPage() {
 
       {/* New Note Modal */}
       {showNewNoteModal && (
-        <Modal onClose={() => setShowNewNoteModal(false)}>
+        <Modal onClose={() => {
+          setShowNewNoteModal(false);
+          setNoteTitle('');
+          setNoteTitleError('');
+        }}>
           <div className="text-center mb-6">
             <div className="text-6xl mb-4">📝</div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">{t('folder.newNote')}</h2>
-            <p className="text-gray-500 text-sm">{t('folder.whatsOnMind')}</p>
           </div>
-          <div className="mb-6">
+          <div className="mb-8">
             <input
               type="text"
               value={noteTitle}
-              onChange={(e) => setNoteTitle(e.target.value)}
+              onChange={(e) => handleNoteTitleChange(e.target.value)}
               placeholder={t('folder.noteTitle')}
               className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-200 text-base"
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleCreateNote()}
             />
+            {noteTitleError && (
+              <p className="text-red-500 text-sm mt-2 font-medium">{noteTitleError}</p>
+            )}
           </div>
           <div className="flex gap-3">
             <button
-              onClick={() => setShowNewNoteModal(false)}
+              onClick={() => {
+                setShowNewNoteModal(false);
+                setNoteTitle('');
+                setNoteTitleError('');
+              }}
               className="flex-1 py-3 px-4 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium"
             >
               {t('folder.cancel')}

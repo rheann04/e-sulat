@@ -44,6 +44,7 @@ export default function MainPage() {
   const [folderName, setFolderName] = useState('');
   const [folders, setFolders] = useState<Folder[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+  const [folderNameError, setFolderNameError] = useState('');
   const router = useRouter();
   const { t } = useLanguage();
 
@@ -59,10 +60,21 @@ export default function MainPage() {
   }, []);
 
   const handleCreateFolder = async () => {
-    if (folderName.trim()) {
+    const trimmedName = folderName.trim();
+    if (trimmedName) {
+      // Check for duplicate folder names (case-insensitive)
+      const existingFolder = folders.find(folder => 
+        folder.name.toLowerCase() === trimmedName.toLowerCase()
+      );
+      
+      if (existingFolder) {
+        setFolderNameError(t('error.duplicateFolder'));
+        return;
+      }
+      
       const newFolder: Folder = {
         id: Date.now().toString(),
-        name: folderName.trim(),
+        name: trimmedName,
         createdAt: new Date()
       };
       const updatedFolders = [...folders, newFolder];
@@ -71,6 +83,7 @@ export default function MainPage() {
       setFolders(sortedFolders);
       await StorageHelpers.setFolders(sortedFolders);
       setFolderName('');
+      setFolderNameError('');
       setShowNewFolderModal(false);
     }
   };
@@ -94,10 +107,22 @@ export default function MainPage() {
   };
 
   const handleUpdateFolder = async () => {
-    if (selectedFolder && folderName.trim()) {
+    const trimmedName = folderName.trim();
+    if (selectedFolder && trimmedName) {
+      // Check for duplicate folder names (case-insensitive), excluding current folder
+      const existingFolder = folders.find(folder => 
+        folder.id !== selectedFolder.id && 
+        folder.name.toLowerCase() === trimmedName.toLowerCase()
+      );
+      
+      if (existingFolder) {
+        setFolderNameError(t('error.duplicateFolder'));
+        return;
+      }
+      
       const updatedFolders = folders.map(folder =>
         folder.id === selectedFolder.id
-          ? { ...folder, name: folderName.trim() }
+          ? { ...folder, name: trimmedName }
           : folder
       );
       // Sort folders alphabetically by name
@@ -105,8 +130,16 @@ export default function MainPage() {
       setFolders(sortedFolders);
       await StorageHelpers.setFolders(sortedFolders);
       setFolderName('');
+      setFolderNameError('');
       setSelectedFolder(null);
       setShowEditFolderModal(false);
+    }
+  };
+
+  const handleFolderNameChange = (value: string) => {
+    setFolderName(value);
+    if (folderNameError) {
+      setFolderNameError('');
     }
   };
 
@@ -211,39 +244,43 @@ export default function MainPage() {
       {/* New Folder Modal */}
       {showNewFolderModal && (
         <Modal onClose={() => setShowNewFolderModal(false)}>
-          <div className="text-center mb-6">
-            <div className="text-6xl mb-4">📁</div>
-            <h2 className="font-heading text-xl font-semibold text-white mb-2">{t('main.newFolder')}</h2>
-            <p className="font-body text-white/70 text-sm">{t('main.folderName')}</p>
-          </div>
-          <div className="mb-6">
-            <Input
-              value={folderName}
-              onChange={(e) => setFolderName(e.target.value)}
-              placeholder={t('main.folderName')}
-              autoFocus
-              onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
-              className="text-base p-3"
-            />
-          </div>
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              size="md"
-              fullWidth
-              onClick={() => setShowNewFolderModal(false)}
-            >
-              {t('main.cancel')}
-            </Button>
-            <Button
-              variant="primary"
-              size="md"
-              fullWidth
-              onClick={handleCreateFolder}
-              disabled={!folderName.trim()}
-            >
-              {t('main.create')}
-            </Button>
+          <div className="py-6">
+            <div className="text-center mb-8">
+              <div className="text-6xl mb-4">📁</div>
+              <h2 className="font-heading text-xl font-semibold text-white mb-2">{t('main.newFolder')}</h2>
+            </div>
+            <div className="mb-8">
+              <Input
+                value={folderName}
+                onChange={(e) => handleFolderNameChange(e.target.value)}
+                placeholder={t('main.folderName')}
+                autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
+                className="text-base p-3"
+              />
+              {folderNameError && (
+                <p className="text-red-300 text-sm mt-2 font-medium">{folderNameError}</p>
+              )}
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                size="md"
+                fullWidth
+                onClick={() => setShowNewFolderModal(false)}
+              >
+                {t('main.cancel')}
+              </Button>
+              <Button
+                variant="primary"
+                size="md"
+                fullWidth
+                onClick={handleCreateFolder}
+                disabled={!folderName.trim()}
+              >
+                {t('main.create')}
+              </Button>
+            </div>
           </div>
         </Modal>
       )}
@@ -254,21 +291,25 @@ export default function MainPage() {
           setShowEditFolderModal(false);
           setSelectedFolder(null);
           setFolderName('');
+          setFolderNameError('');
         }}>
           <div className="text-center mb-6">
             <div className="text-6xl mb-4">✏️</div>
             <h2 className="font-heading text-xl font-semibold text-white mb-2">{t('common.edit')} {t('main.folders')}</h2>
             <p className="font-body text-white/70 text-sm">{t('main.folderName')}</p>
           </div>
-          <div className="mb-6">
+          <div className="mb-8">
             <Input
               value={folderName}
-              onChange={(e) => setFolderName(e.target.value)}
+              onChange={(e) => handleFolderNameChange(e.target.value)}
               placeholder={t('main.folderName')}
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleUpdateFolder()}
               className="text-base p-3"
             />
+            {folderNameError && (
+              <p className="text-red-300 text-sm mt-2 font-medium">{folderNameError}</p>
+            )}
           </div>
           <div className="flex gap-3">
             <Button
@@ -279,6 +320,7 @@ export default function MainPage() {
                 setShowEditFolderModal(false);
                 setSelectedFolder(null);
                 setFolderName('');
+                setFolderNameError('');
               }}
             >
               {t('main.cancel')}
@@ -302,7 +344,7 @@ export default function MainPage() {
           setShowDeleteConfirmModal(false);
           setSelectedFolder(null);
         }}>
-          <div className="text-center mb-6">
+          <div className="text-center mb-8">
             <div className="text-6xl mb-4">🗑️</div>
             <h2 className="font-heading text-xl font-semibold text-white mb-2">{t('common.delete')} {t('main.folders')}</h2>
             <p className="font-body text-white/70 text-sm mb-4">

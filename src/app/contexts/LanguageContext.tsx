@@ -30,20 +30,28 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   useEffect(() => {
     setIsClient(true);
-    const savedLanguage = localStorage.getItem('language') as Language;
-    if (savedLanguage && ['ENGLISH', 'TAGALOG', 'BISAYA'].includes(savedLanguage)) {
-      setLanguageState(savedLanguage);
+    // Only access localStorage on the client side
+    if (typeof window !== 'undefined') {
+      const savedLanguage = localStorage.getItem('language') as Language;
+      if (savedLanguage && ['ENGLISH', 'TAGALOG', 'BISAYA'].includes(savedLanguage)) {
+        setLanguageState(savedLanguage);
+      }
     }
   }, []);
 
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
-    if (isClient) {
+    // Only access localStorage on the client side
+    if (typeof window !== 'undefined') {
       localStorage.setItem('language', newLanguage);
     }
   };
 
   const t = (key: string): string => {
+    // Ensure we always return a string, even during SSR
+    if (!isClient) {
+      return translations['ENGLISH'][key] || key;
+    }
     return translations[language]?.[key] || translations['ENGLISH'][key] || key;
   };
 
@@ -206,6 +214,10 @@ const translations: Record<Language, Record<string, string>> = {
     'common.confirm': 'Confirm',
     'common.loading': 'Loading...',
     'common.chooseAction': 'Choose an action',
+
+    // Error Messages
+    'error.duplicateFolder': 'A folder with this name already exists',
+    'error.duplicateNote': 'A note with this title already exists in this folder',
   },
 
   TAGALOG: {
@@ -358,6 +370,10 @@ const translations: Record<Language, Record<string, string>> = {
     'common.confirm': 'Kumpirmahin',
     'common.loading': 'Naglo-load...',
     'common.chooseAction': 'Pumili ng aksyon',
+
+    // Error Messages
+    'error.duplicateFolder': 'May folder na na may ganitong pangalan',
+    'error.duplicateNote': 'May tala na na may ganitong pamagat sa folder na ito',
   },
 
   BISAYA: {
@@ -510,5 +526,9 @@ const translations: Record<Language, Record<string, string>> = {
     'common.confirm': 'Kumpirmahon',
     'common.loading': 'Nag-load...',
     'common.chooseAction': 'Pilia ang aksyon',
+
+    // Error Messages
+    'error.duplicateFolder': 'Naa nay folder nga pareho og ngalan',
+    'error.duplicateNote': 'Naa nay nota nga pareho og titulo sa folder na ni',
   },
 };
