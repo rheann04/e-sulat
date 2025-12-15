@@ -29,12 +29,7 @@ interface Note {
   photos?: string[]; // Array of base64 encoded images
 }
 
-interface TrashedItem {
-  id: string;
-  type: 'note' | 'folder';
-  data: Note | Folder;
-  deletedAt: Date;
-}
+
 
 export default function MainPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -193,10 +188,10 @@ export default function MainPage() {
       {/* Enhanced Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-pink-300/20 to-purple-400/20 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-300/20 to-cyan-400/20 rounded-full blur-3xl animate-float" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] bg-gradient-to-br from-yellow-200/10 to-orange-300/10 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-green-300/15 to-teal-400/15 rounded-full blur-2xl animate-float" style={{animationDelay: '3s'}}></div>
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-br from-indigo-300/15 to-purple-400/15 rounded-full blur-2xl animate-float" style={{animationDelay: '4s'}}></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-300/20 to-cyan-400/20 rounded-full blur-3xl animate-float [animation-delay:1s]"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] bg-gradient-to-br from-yellow-200/10 to-orange-300/10 rounded-full blur-3xl animate-float [animation-delay:2s]"></div>
+        <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-green-300/15 to-teal-400/15 rounded-full blur-2xl animate-float [animation-delay:3s]"></div>
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-br from-indigo-300/15 to-purple-400/15 rounded-full blur-2xl animate-float [animation-delay:4s]"></div>
       </div>
 
       {/* Header */}
@@ -217,7 +212,7 @@ export default function MainPage() {
             {folders.map((folder, index) => (
               <div 
                 key={folder.id} 
-                className="animate-slide-in-right"
+                className={`animate-slide-in-right`}
                 style={{animationDelay: `${index * 0.1}s`}}
               >
                 <FolderCard
@@ -347,11 +342,8 @@ export default function MainPage() {
           <div className="text-center mb-8">
             <div className="text-6xl mb-4">🗑️</div>
             <h2 className="font-heading text-xl font-semibold text-white mb-2">{t('common.delete')} {t('main.folders')}</h2>
-            <p className="font-body text-white/70 text-sm mb-4">
+            <p className="font-body text-white/70 text-sm">
               {t('trash.confirmDelete')} "{selectedFolder.name}"?
-            </p>
-            <p className="font-body text-red-300 text-sm font-medium">
-              {t('trash.cannotUndo')}
             </p>
           </div>
           <div className="flex gap-3">

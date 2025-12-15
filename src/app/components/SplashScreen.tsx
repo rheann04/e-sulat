@@ -9,8 +9,10 @@ interface SplashScreenProps {
 
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const timer = setTimeout(() => {
       setIsVisible(false);
       setTimeout(onComplete, 300); // Wait for fade out animation
@@ -18,6 +20,33 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
     return () => clearTimeout(timer);
   }, [onComplete]);
+
+  // Prevent hydration mismatch by ensuring consistent initial render
+  if (!isMounted) {
+    return (
+      <div className="fixed inset-0 bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center z-50">
+        <div className="text-center">
+          <div className="mb-12">
+            <div className="w-40 h-40 mx-auto relative">
+              <div className="w-full h-full rounded-3xl bg-gradient-warm shadow-glow-warm flex items-center justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="E-Sulat Logo"
+                  width={120}
+                  height={120}
+                  className="rounded-2xl"
+                />
+              </div>
+            </div>
+          </div>
+          <h1 className="text-5xl sm:text-6xl font-bold text-white drop-shadow-lg tracking-wide mb-4">
+            E-SULAT
+          </h1>
+          <p className="text-white/90 mt-4 text-xl drop-shadow-md font-medium">Your Digital Notebook</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isVisible) {
     return (

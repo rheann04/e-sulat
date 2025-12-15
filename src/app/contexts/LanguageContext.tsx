@@ -26,32 +26,37 @@ interface LanguageProviderProps {
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>('ENGLISH');
-  const [isClient, setIsClient] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    // Only access localStorage on the client side
-    if (typeof window !== 'undefined') {
-      const savedLanguage = localStorage.getItem('language') as Language;
-      if (savedLanguage && ['ENGLISH', 'TAGALOG', 'BISAYA'].includes(savedLanguage)) {
-        setLanguageState(savedLanguage);
+    // Initialize language from localStorage after hydration
+    const initializeLanguage = () => {
+      try {
+        const savedLanguage = localStorage.getItem('language') as Language;
+        if (savedLanguage && ['ENGLISH', 'TAGALOG', 'BISAYA'].includes(savedLanguage)) {
+          setLanguageState(savedLanguage);
+        }
+      } catch (error) {
+        console.error('Error loading language from localStorage:', error);
+      } finally {
+        setIsHydrated(true);
       }
-    }
+    };
+
+    initializeLanguage();
   }, []);
 
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
-    // Only access localStorage on the client side
-    if (typeof window !== 'undefined') {
+    try {
       localStorage.setItem('language', newLanguage);
+    } catch (error) {
+      console.error('Error saving language to localStorage:', error);
     }
   };
 
   const t = (key: string): string => {
-    // Ensure we always return a string, even during SSR
-    if (!isClient) {
-      return translations['ENGLISH'][key] || key;
-    }
+    // Use current language state, fallback to English, then return key
     return translations[language]?.[key] || translations['ENGLISH'][key] || key;
   };
 

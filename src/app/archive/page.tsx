@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Sidebar from '../components/Sidebar';
+import { StorageHelpers } from '../utils/storage';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface Note {
@@ -19,14 +19,15 @@ export default function ArchivePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [archivedNotes, setArchivedNotes] = useState<Note[]>([]);
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
-  const router = useRouter();
   const { t } = useLanguage();
 
   useEffect(() => {
-    const savedArchivedNotes = localStorage.getItem('archivedNotes');
-    if (savedArchivedNotes) {
-      setArchivedNotes(JSON.parse(savedArchivedNotes));
-    }
+    const loadArchivedNotes = async () => {
+      const savedArchivedNotes = await StorageHelpers.getArchivedNotes();
+      setArchivedNotes(savedArchivedNotes);
+    };
+    
+    loadArchivedNotes();
   }, []);
 
   const handleSelectNote = (noteId: string) => {
@@ -37,15 +38,14 @@ export default function ArchivePage() {
     );
   };
 
-  const handleUnarchive = () => {
-    const savedNotes = localStorage.getItem('notes');
-    const allNotes: Note[] = savedNotes ? JSON.parse(savedNotes) : [];
+  const handleUnarchive = async () => {
+    const allNotes = await StorageHelpers.getNotes();
     
     const notesToUnarchive = archivedNotes.filter(note => selectedNotes.includes(note.id));
     const remainingArchived = archivedNotes.filter(note => !selectedNotes.includes(note.id));
     
-    localStorage.setItem('notes', JSON.stringify([...allNotes, ...notesToUnarchive]));
-    localStorage.setItem('archivedNotes', JSON.stringify(remainingArchived));
+    await StorageHelpers.setNotes([...allNotes, ...notesToUnarchive]);
+    await StorageHelpers.setArchivedNotes(remainingArchived);
     
     setArchivedNotes(remainingArchived);
     setSelectedNotes([]);
@@ -147,9 +147,9 @@ export default function ArchivePage() {
                   </div>
 
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       setSelectedNotes([note.id]);
-                      handleUnarchive();
+                      await handleUnarchive();
                     }}
                     className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50/20 rounded-lg transition-all"
                     title={t('trash.restore')}

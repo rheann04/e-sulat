@@ -66,28 +66,7 @@ export default function TrashPage() {
     );
   };
 
-  const handleRestore = async () => {
-    const itemsToRestore = trashedItems.filter(item => selectedItems.includes(item.id));
-    const remainingTrashed = trashedItems.filter(item => !selectedItems.includes(item.id));
-    
-    // Restore notes
-    const notesToRestore = itemsToRestore.filter(item => item.type === 'note').map(item => item.data as Note);
-    if (notesToRestore.length > 0) {
-      const allNotes = await StorageHelpers.getNotes();
-      await StorageHelpers.setNotes([...allNotes, ...notesToRestore]);
-    }
-    
-    // Restore folders
-    const foldersToRestore = itemsToRestore.filter(item => item.type === 'folder').map(item => item.data as Folder);
-    if (foldersToRestore.length > 0) {
-      const allFolders = await StorageHelpers.getFolders();
-      await StorageHelpers.setFolders([...allFolders, ...foldersToRestore]);
-    }
-    
-    localStorage.setItem('trashedItems', JSON.stringify(remainingTrashed));
-    setTrashedItems(remainingTrashed);
-    setSelectedItems([]);
-  };
+
 
   const handleRestoreItem = async (itemId: string) => {
     const itemToRestore = trashedItems.find(item => item.id === itemId);
@@ -198,7 +177,11 @@ export default function TrashPage() {
             {selectedItems.length > 0 && (
               <div className="flex gap-2">
                 <button
-                  onClick={handleRestore}
+                  onClick={() => {
+                    // Restore all selected items
+                    selectedItems.forEach(itemId => handleRestoreItem(itemId));
+                    setSelectedItems([]);
+                  }}
                   className="px-4 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -220,6 +203,8 @@ export default function TrashPage() {
           </div>
         </div>
       )}
+
+
 
 
 

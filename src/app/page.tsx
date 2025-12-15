@@ -8,32 +8,27 @@ import { useLanguage } from './contexts/LanguageContext';
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true); // Default to true to match server render
   const [dontShowAgain, setDontShowAgain] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const router = useRouter();
   const { t } = useLanguage();
 
-  // Ensure we're on the client side to prevent hydration issues
+  // Handle hydration and check welcome status
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
-    
-    const checkWelcomeStatus = async () => {
-      const hideWelcome = await StorageHelpers.getHideWelcome();
-      if (hideWelcome) {
-        // If user has chosen to skip welcome, go directly to main after splash
-        setShowWelcome(false);
-      } else {
-        setShowWelcome(true);
+    const initializeApp = async () => {
+      try {
+        const hideWelcome = await StorageHelpers.getHideWelcome();
+        setShowWelcome(!hideWelcome);
+        setIsHydrated(true);
+      } catch (error) {
+        console.error('Error initializing app:', error);
+        setIsHydrated(true);
       }
     };
     
-    checkWelcomeStatus();
-  }, [isClient]);
+    initializeApp();
+  }, []);
 
   const handleSplashComplete = () => {
     setShowSplash(false);
@@ -49,24 +44,28 @@ export default function Home() {
     router.push('/main');
   };
 
-  // Use useEffect to handle navigation instead of during render
+  // Handle navigation after hydration
   useEffect(() => {
-    if (isClient && !showSplash && !showWelcome) {
+    if (isHydrated && !showSplash && !showWelcome) {
       router.push('/main');
     }
-  }, [isClient, showSplash, showWelcome, router]);
+  }, [isHydrated, showSplash, showWelcome, router]);
 
-  // Show loading state during hydration
-  if (!isClient) {
-    return <SplashScreen onComplete={() => {}} />;
-  }
-
+  // Always render splash first, then welcome screen
   if (showSplash) {
     return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
-  if (!showWelcome) {
-    return null; // Show nothing while navigating
+  // If not hydrated yet or should not show welcome, show loading
+  if (!isHydrated || !showWelcome) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto"></div>
+          <p className="text-white mt-4">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
