@@ -89,6 +89,28 @@ export default function TrashPage() {
     setSelectedItems([]);
   };
 
+  const handleRestoreItem = async (itemId: string) => {
+    const itemToRestore = trashedItems.find(item => item.id === itemId);
+    if (!itemToRestore) return;
+
+    const remainingTrashed = trashedItems.filter(item => item.id !== itemId);
+    
+    // Restore the specific item
+    if (itemToRestore.type === 'note') {
+      const allNotes = await StorageHelpers.getNotes();
+      await StorageHelpers.setNotes([...allNotes, itemToRestore.data as Note]);
+    } else {
+      const allFolders = await StorageHelpers.getFolders();
+      await StorageHelpers.setFolders([...allFolders, itemToRestore.data as Folder]);
+    }
+    
+    localStorage.setItem('trashedItems', JSON.stringify(remainingTrashed));
+    setTrashedItems(remainingTrashed);
+    
+    // Remove the restored item from selection if it was selected
+    setSelectedItems(prev => prev.filter(id => id !== itemId));
+  };
+
   const handlePermanentDelete = () => {
     const remainingTrashed = trashedItems.filter(item => !selectedItems.includes(item.id));
     
@@ -162,15 +184,40 @@ export default function TrashPage() {
         </div>
       )}
 
-      {/* Select All Button */}
+      {/* Select All Button and Actions */}
       {trashedItems.length > 0 && (
         <div className="bg-white/20 backdrop-blur-sm border-b border-white/30 p-4 relative z-10">
-          <button
-            onClick={handleSelectAll}
-            className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
-          >
-            {selectedItems.length === trashedItems.length ? t('folder.unselectAll') : t('folder.selectAll')}
-          </button>
+          <div className="flex justify-between items-center">
+            <button
+              onClick={handleSelectAll}
+              className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
+            >
+              {selectedItems.length === trashedItems.length ? t('folder.unselectAll') : t('folder.selectAll')}
+            </button>
+            
+            {selectedItems.length > 0 && (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleRestore}
+                  className="px-4 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                  </svg>
+                  {t('trash.restore')} ({selectedItems.length})
+                </button>
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  {t('trash.permanentDelete')} ({selectedItems.length})
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -185,8 +232,8 @@ export default function TrashPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Trash is empty</h3>
-            <p className="text-gray-600">Deleted items will appear here</p>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('trash.noItems')}</h3>
+            <p className="text-gray-600">{t('trash.noItemsDesc')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -225,24 +272,21 @@ export default function TrashPage() {
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-800 truncate">{title}</h3>
                       <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                        <span className="capitalize">{item.type}</span>
+                        <span className="capitalize">{t('trash.deleted')}</span>
                         <span>•</span>
-                        <span>Deleted {new Date(item.deletedAt).toLocaleDateString()}</span>
+                        <span>{t('trash.deleted')} {new Date(item.deletedAt).toLocaleDateString()}</span>
                         <span>•</span>
                         <span className={`font-medium ${daysRemaining <= 7 ? 'text-red-600' : 'text-gray-600'}`}>
-                          {daysRemaining} days left
+                          {daysRemaining} {t('trash.daysLeft')}
                         </span>
                       </div>
                     </div>
 
                     <div className="flex gap-2">
                       <button
-                        onClick={async () => {
-                          setSelectedItems([item.id]);
-                          await handleRestore();
-                        }}
+                        onClick={() => handleRestoreItem(item.id)}
                         className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50/20 rounded-lg transition-all"
-                        title="Restore"
+                        title={t('trash.restore')}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -255,7 +299,7 @@ export default function TrashPage() {
                           setShowDeleteModal(true);
                         }}
                         className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50/20 rounded-lg transition-all"
-                        title="Delete Permanently"
+                        title={t('trash.permanentDelete')}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -274,7 +318,7 @@ export default function TrashPage() {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Delete Confirmation Modal */}
-      {showDeleteModal && itemToDelete && (
+      {showDeleteModal && (
         <Modal onClose={() => {
           setShowDeleteModal(false);
           setItemToDelete(null);
@@ -288,8 +332,17 @@ export default function TrashPage() {
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">{t('trash.permanentDelete')}</h2>
               <p className="text-white/80">
-                {t('trash.confirmDelete')} "{itemToDelete.type === 'note' ? (itemToDelete.data as Note).title : (itemToDelete.data as Folder).name}"? 
-                {t('trash.cannotUndo')}
+                {itemToDelete ? (
+                  <>
+                    {t('trash.confirmDelete')} "{itemToDelete.type === 'note' ? (itemToDelete.data as Note).title : (itemToDelete.data as Folder).name}"? 
+                    {t('trash.cannotUndo')}
+                  </>
+                ) : (
+                  <>
+                    {t('trash.confirmDelete')} {selectedItems.length} {selectedItems.length === 1 ? 'item' : 'items'}? 
+                    {t('trash.cannotUndo')}
+                  </>
+                )}
               </p>
             </div>
             
@@ -301,13 +354,13 @@ export default function TrashPage() {
                 }}
                 className="flex-1 py-3 px-4 bg-white/20 text-white border border-white/30 rounded-xl hover:bg-white/30 transition-all font-medium"
               >
-                Cancel
+                {t('main.cancel')}
               </button>
               <button
                 onClick={handlePermanentDelete}
                 className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all font-medium"
               >
-                Delete Permanently
+                {t('trash.permanentDelete')}
               </button>
             </div>
           </div>
@@ -336,13 +389,13 @@ export default function TrashPage() {
                 onClick={() => setShowEmptyTrashModal(false)}
                 className="flex-1 py-3 px-4 bg-white/20 text-white border border-white/30 rounded-xl hover:bg-white/30 transition-all font-medium"
               >
-                Cancel
+                {t('main.cancel')}
               </button>
               <button
                 onClick={handleEmptyTrash}
                 className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all font-medium"
               >
-{t('trash.emptyTrash')}
+                {t('trash.emptyTrash')}
               </button>
             </div>
           </div>

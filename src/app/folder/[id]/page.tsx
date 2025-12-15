@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Modal from '../../components/Modal';
-
+import { useLanguage } from '../../contexts/LanguageContext';
 import { StorageHelpers } from '../../utils/storage';
 
 interface Note {
@@ -35,6 +35,7 @@ export default function FolderPage() {
   const router = useRouter();
   const params = useParams();
   const folderId = params.id as string;
+  const { t } = useLanguage();
 
   useEffect(() => {
     const loadData = async () => {
@@ -223,7 +224,7 @@ export default function FolderPage() {
                 : 'bg-white/30 text-gray-700 hover:bg-white/40'
             }`}
           >
-            All ({notes.length})
+            {t('folder.all')} ({notes.length})
           </button>
           <button
             onClick={() => setFilter('pending')}
@@ -233,7 +234,7 @@ export default function FolderPage() {
                 : 'bg-white/30 text-gray-700 hover:bg-white/40'
             }`}
           >
-            Pending ({notes.filter(n => n.status === 'pending').length})
+            {t('folder.pending')} ({notes.filter(n => n.status === 'pending').length})
           </button>
           <button
             onClick={() => setFilter('completed')}
@@ -243,7 +244,7 @@ export default function FolderPage() {
                 : 'bg-white/30 text-gray-700 hover:bg-white/40'
             }`}
           >
-            Done ({notes.filter(n => n.status === 'completed').length})
+            {t('folder.done')} ({notes.filter(n => n.status === 'completed').length})
           </button>
         </div>
 
@@ -254,14 +255,14 @@ export default function FolderPage() {
               onClick={handleEnterSelectMode}
               className="touch-target px-4 sm:px-6 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl sm:rounded-2xl font-semibold text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
             >
-              ✓ Select
+              ✓ {t('folder.select')}
             </button>
           ) : (
             <button
               onClick={handleExitSelectMode}
               className="touch-target px-4 sm:px-6 py-2.5 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white rounded-xl sm:rounded-2xl font-semibold text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
             >
-              ✕ Cancel
+              ✕ {t('folder.cancel')}
             </button>
           )}
         </div>
@@ -276,7 +277,7 @@ export default function FolderPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {selectedNotes.length === filteredNotes.length ? 'Unselect All' : 'Select All'}
+              {selectedNotes.length === filteredNotes.length ? t('folder.unselectAll') : t('folder.selectAll')}
             </button>
             <button
               onClick={handleArchive}
@@ -285,7 +286,7 @@ export default function FolderPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8l6 6V9l6-6V3h-5L9 6H4v2z" />
               </svg>
-              Archive
+              {t('folder.archive')}
             </button>
             <button
               onClick={handleDelete}
@@ -294,7 +295,7 @@ export default function FolderPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
-              Delete
+              {t('folder.delete')}
             </button>
           </div>
         )}
@@ -305,13 +306,13 @@ export default function FolderPage() {
         {filteredNotes.length === 0 ? (
           <div className="text-center py-8 sm:py-12">
             <div className="text-4xl sm:text-5xl lg:text-6xl mb-3 sm:mb-4">📝</div>
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">No notes yet</h3>
-            <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Start creating notes to organize your thoughts</p>
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">{t('folder.noNotes')}</h3>
+            <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">{t('folder.noNotesDesc')}</p>
             <button
               onClick={() => setShowNewNoteModal(true)}
               className="touch-target px-4 sm:px-6 py-2 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg sm:rounded-xl font-medium transition-all duration-200 shadow-lg text-sm sm:text-base"
             >
-              Create First Note
+              {t('folder.createFirstNote')}
             </button>
           </div>
         ) : (
@@ -365,7 +366,7 @@ export default function FolderPage() {
                         ? 'bg-green-100 text-green-700' 
                         : 'bg-orange-100 text-orange-700'
                     }`}>
-                      {note.status === 'completed' ? '✓ Done' : '⏳ Pending'}
+                      {note.status === 'completed' ? t('status.completed') : t('status.pending')}
                     </span>
                     {note.photos && note.photos.length > 0 && (
                       <>
@@ -408,15 +409,15 @@ export default function FolderPage() {
         <Modal onClose={() => setShowNewNoteModal(false)}>
           <div className="text-center mb-6">
             <div className="text-6xl mb-4">📝</div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">New Note</h2>
-            <p className="text-gray-500 text-sm">What's on your mind?</p>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">{t('folder.newNote')}</h2>
+            <p className="text-gray-500 text-sm">{t('folder.whatsOnMind')}</p>
           </div>
           <div className="mb-6">
             <input
               type="text"
               value={noteTitle}
               onChange={(e) => setNoteTitle(e.target.value)}
-              placeholder="Note title"
+              placeholder={t('folder.noteTitle')}
               className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-200 text-base"
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleCreateNote()}
@@ -427,14 +428,14 @@ export default function FolderPage() {
               onClick={() => setShowNewNoteModal(false)}
               className="flex-1 py-3 px-4 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium"
             >
-              Cancel
+              {t('folder.cancel')}
             </button>
             <button
               onClick={handleCreateNote}
               disabled={!noteTitle.trim()}
               className="flex-1 py-3 px-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
             >
-              Create Note
+              {t('main.create')}
             </button>
           </div>
         </Modal>

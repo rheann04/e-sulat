@@ -105,7 +105,7 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.termsOfService': 'Terms of Service',
 
     // Navigation
-    'nav.main': 'Main',
+    'nav.notes': 'Notes',
     'nav.archive': 'Archive',
     'nav.trash': 'Trash',
     'nav.reminder': 'Reminder',
@@ -133,6 +133,7 @@ const translations: Record<Language, Record<string, string>> = {
     'trash.confirmEmptyTrash': 'Are you sure you want to permanently delete all',
     'trash.itemsInTrash': 'items in trash',
     'trash.cannotUndo': 'This action cannot be undone.',
+    'trash.daysLeft': 'days left',
 
     // Reminder
     'reminder.title': 'Reminders',
@@ -256,7 +257,7 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.termsOfService': 'Mga Tuntunin ng Serbisyo',
 
     // Navigation
-    'nav.main': 'Pangunahin',
+    'nav.notes': 'Mga Tala',
     'nav.archive': 'Archive',
     'nav.trash': 'Basurahan',
     'nav.reminder': 'Paalala',
@@ -284,6 +285,7 @@ const translations: Record<Language, Record<string, string>> = {
     'trash.confirmEmptyTrash': 'Sigurado ba kayong gusto ninyong tanggalin nang tuluyan ang lahat ng',
     'trash.itemsInTrash': 'mga item sa basurahan',
     'trash.cannotUndo': 'Hindi na ito maaaring ibalik.',
+    'trash.daysLeft': 'araw na natitira',
 
     // Reminder
     'reminder.title': 'Mga Paalala',
@@ -379,7 +381,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Folder Screen
     'folder.all': 'Tanan',
-    'folder.pending': 'Naghulat',
+    'folder.pending': 'Wa pa kahuman',
     'folder.done': 'Nahuman na',
     'folder.select': 'Pilia',
     'folder.cancel': 'Kanselahon',
@@ -395,7 +397,7 @@ const translations: Record<Language, Record<string, string>> = {
     'folder.whatsOnMind': 'Unsa may naa sa inyong hunahuna?',
 
     // Note Status
-    'status.pending': '⏳ Naghulat',
+    'status.pending': '⏳ Wa pa kahuman',
     'status.completed': '✓ Nahuman na',
 
     // Settings
@@ -407,8 +409,8 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.termsOfService': 'Mga Kondisyon sa Serbisyo',
 
     // Navigation
-    'nav.main': 'Panguna',
-    'nav.archive': 'Archive',
+    'nav.notes': 'Mga Nota',
+    'nav.archive': 'Arkibo',
     'nav.trash': 'Basurahan',
     'nav.reminder': 'Pahinumdom',
     'nav.settings': 'Mga Setting',
@@ -417,7 +419,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.navigate': 'Mag-navigate sa inyong workspace',
 
     // Archive
-    'archive.title': 'Archive',
+    'archive.title': 'Arkibo',
     'archive.noItems': 'Walay naka-archive nga mga item',
     'archive.noItemsDesc': 'Ang mga naka-archive nga nota ug folder makita dinhi',
     'archive.archived': 'Naka-archive',
@@ -435,6 +437,7 @@ const translations: Record<Language, Record<string, string>> = {
     'trash.confirmEmptyTrash': 'Sigurado ba mo nga gusto nimo tangtangon sa hingpit ang tanan nga',
     'trash.itemsInTrash': 'mga item sa basurahan',
     'trash.cannotUndo': 'Dili na ni mabalik.',
+    'trash.daysLeft': 'ka adlaw na natira',
 
     // Reminder
     'reminder.title': 'Mga Pahinumdom',

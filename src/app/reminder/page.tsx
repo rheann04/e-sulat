@@ -6,6 +6,7 @@ import Sidebar from '../components/Sidebar';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Reminder {
   id: string;
@@ -31,6 +32,7 @@ export default function ReminderPage() {
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   const router = useRouter();
+  const { t } = useLanguage();
 
   // Load reminders from localStorage on component mount
   useEffect(() => {
@@ -149,7 +151,7 @@ export default function ReminderPage() {
       {/* Header */}
       <header className="bg-white/20 backdrop-blur-sm shadow-lg p-4 flex justify-between items-center relative z-10">
         <div className="w-10"></div>
-        <h1 className="text-xl font-bold text-gray-800 text-center">Reminders</h1>
+        <h1 className="text-xl font-bold text-gray-800 text-center">{t('reminder.title')}</h1>
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 hover:bg-gray-100 rounded-lg"
@@ -173,10 +175,10 @@ export default function ReminderPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">No reminders yet</h3>
-            <p className="text-gray-600 mb-6">Create your first reminder to get started</p>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('reminder.noReminders')}</h3>
+            <p className="text-gray-600 mb-6">{t('reminder.noRemindersDesc')}</p>
             <Button onClick={() => setShowModal(true)}>
-              Add Reminder
+              {t('reminder.createFirstReminder')}
             </Button>
           </div>
         ) : (
@@ -272,7 +274,7 @@ export default function ReminderPage() {
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white mb-6">Add New Reminder</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">{t('reminder.createFirstReminder')}</h2>
             
             <Input
               label="Title"

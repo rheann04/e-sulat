@@ -1,5 +1,7 @@
 'use client';
 
+import { useLanguage } from '../contexts/LanguageContext';
+
 interface FloatingActionButtonsProps {
   onAllNotes?: () => void;
   onNewFolder: () => void;
@@ -11,6 +13,7 @@ export default function FloatingActionButtons({
   onNewFolder, 
   showAllNotes = true 
 }: FloatingActionButtonsProps) {
+  const { t } = useLanguage();
   return (
     <div className="fab-responsive safe-area-padding">
       {showAllNotes && (
@@ -22,8 +25,8 @@ export default function FloatingActionButtons({
             <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:scale-110 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span className="hidden sm:inline">ALL NOTES</span>
-            <span className="sm:hidden">NOTES</span>
+            <span className="hidden sm:inline">{t('folder.all').toUpperCase()} {t('nav.main').toUpperCase()}</span>
+            <span className="sm:hidden">{t('nav.main').toUpperCase()}</span>
           </div>
         </button>
       )}
@@ -35,8 +38,8 @@ export default function FloatingActionButtons({
           <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:scale-110 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          <span className="hidden sm:inline">NEW FOLDER</span>
-          <span className="sm:hidden">FOLDER</span>
+          <span className="hidden sm:inline">{t('main.newFolder').toUpperCase()}</span>
+          <span className="sm:hidden">{t('main.folders').toUpperCase()}</span>
         </div>
       </button>
     </div>

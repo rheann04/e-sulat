@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Modal from '../../components/Modal';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { StorageHelpers } from '../../utils/storage';
 
 interface Note {
@@ -53,6 +54,7 @@ export default function NotePage() {
   const router = useRouter();
   const params = useParams();
   const noteId = params.id as string;
+  const { t } = useLanguage();
 
   useEffect(() => {
     const loadNote = async () => {
@@ -154,7 +156,7 @@ export default function NotePage() {
   if (!note) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+        <div className="text-white text-xl">{t('common.loading')}</div>
       </div>
     );
   }
@@ -185,7 +187,7 @@ export default function NotePage() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="flex-1 text-xl font-bold bg-transparent border-none outline-none"
-          placeholder="Note title"
+          placeholder={t('folder.noteTitle')}
         />
       </header>
 
@@ -203,7 +205,7 @@ export default function NotePage() {
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Start writing your note..."
+              placeholder={t('folder.whatsOnMind')}
               className="w-full h-full min-h-[300px] bg-transparent border-none outline-none resize-none text-gray-800 relative z-10"
               style={{ fontFamily: currentFont.family }}
             />
